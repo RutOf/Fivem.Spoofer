@@ -37,3 +37,10 @@ THIS IS AN OPEN SOURCE ITEM SO IT DOESN'T HAVE A .SLN FILE, IT'S JUST A SOURCE D
  ```sh-session
 ・ OUR CHEATING PRIVATE CAN PLAY MAIN ACCOUNT WITHOUT GETTING BANNED / JOIN DISCORD: Fnoberz#0001・ 
 ```     
+
+***
+
+<h2 align="center"> Copyright © 2021 - 2022
+
+
+##### <p align="center">  FNOBERZ OFFICIAL / JOIN DISCORD [CLOUD PROJECT](https://discord.gg/JUwFCGHbV4)
