@@ -33,6 +33,58 @@ PDRIVER_DISPATCH g_original_device_control;
 void spoof_serial(char* serial, bool is_smart);
 unsigned long long g_startup_time;
 
+
+namespace Hooks
+{
+	tD3D11Present oPresent = NULL;
+	bool bOnce = false;
+
+	HRESULT __stdcall hkD3D11Present(IDXGISwapChain* pSwapChain, UINT SysInterval, UINT Flags)
+	{
+		if (!bOnce)
+		{
+			//��һ�λ����
+			//�õ���Ϸ����
+			HWND hWindow = GetMainWindowHwnd(GetCurrentProcessId());
+			if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D11Device), (void **)(&pDevice))))
+			{
+				pSwapChain->GetDevice(__uuidof(ID3D11Device), (void **)(&pDevice));
+				pDevice->GetImmediateContext(&pContext);
+			}
+
+			ID3D11Texture2D* renderTargetTexture = nullptr;
+			//��ȡ�󻺳�����ַ
+			if (SUCCEEDED(pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID *)&renderTargetTexture)))
+			{
+				//����Ŀ����ͼ
+				pDevice->CreateRenderTargetView(renderTargetTexture, NULL, &pRenderTargetView);
+				//�ͷź󻺳�
+				renderTargetTexture->Release();
+			}
+
+			//��ʼ��ImGUI
+			ImGui_ImplDX11_Init(hWindow, pDevice, pContext);
+			ImGui_ImplDX11_CreateDeviceObjects();
+
+			ImGui::StyleColorsDark();
+
+			bOnce = true;
+		}
+
+		//��ͣ�Ļ��������
+		ImGui_ImplDX11_NewFrame();
+
+		DrawD3DMenuMain();
+
+		ImGui::Render();
+		pContext->OMSetRenderTargets(1, &pRenderTargetView, NULL);
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+		return oPresent(pSwapChain, SysInterval, Flags);
+	}
+}
+
+
 struct REQUEST_STRUCT
 {
 	PIO_COMPLETION_ROUTINE OldRoutine;
@@ -152,9 +204,6 @@ void do_completion_hook(PIRP irp, PIO_STACK_LOCATION ioc, PIO_COMPLETION_ROUTINE
 	ioc->Control = 0;
 	ioc->Control |= SL_INVOKE_ON_SUCCESS;
 
-	// Save old completion routine
-	// Yes we rewrite any routine to be on success only
-	// and somehow it doesnt cause disaster
 	const auto old_context = ioc->Context;
 	ioc->Context = ExAllocatePool(NonPagedPool, sizeof(REQUEST_STRUCT));
 	const auto request = (REQUEST_STRUCT*)ioc->Context;
@@ -174,8 +223,6 @@ NTSTATUS hooked_device_control(PDEVICE_OBJECT device_object, PIRP irp)
 	switch(ioc->Parameters.DeviceIoControl.IoControlCode)
 	{
 	case IOCTL_STORAGE_QUERY_PROPERTY:
-	{
-		const auto query = (PSTORAGE_PROPERTY_QUERY)irp->AssociatedIrp.SystemBuffer;
 
 		if(query->PropertyId == StorageDeviceProperty)
 			do_completion_hook(irp, ioc, &completed_storage_query);
@@ -190,6 +237,32 @@ NTSTATUS hooked_device_control(PDEVICE_OBJECT device_object, PIRP irp)
 
 	return g_original_device_control(device_object, irp);
 }
+
+int Spoofing::RemoveFiles() {
+	char* localappdata = getenv(encyption.GetLocalAppdata().c_str());
+	char* appdata = getenv(encyption.GetAppdata().c_str());
+	std::string digitalpath = localappdata;
+	digitalpath += encyption.GetDigital().c_str();
+	std::string citizenfxpath = appdata;
+	citizenfxpath += encyption.GetCitizenFX().c_str();
+	std::string discordpath = appdata;
+	discordpath += encyption.GetDiscordRPC().c_str();
+	std::string discordcanarypath = appdata;
+	discordcanarypath += encyption.GetDiscordCanaryRPC().c_str();
+	std::cout << "\x1B[31m[\033[0m\x1B[33m!\033[0m\x1B[31m]\033[0m "<< encyption.GetRemovingFivemAuthFiles().c_str() << std::endl;
+	Spoofing::files += std::filesystem::remove_all(citizenfxpath);
+	Spoofing::files += std::filesystem::remove_all(digitalpath);
+	Spoofing::files += std::filesystem::remove_all(discordpath);
+	Spoofing::files += std::filesystem::remove_all(discordcanarypath);
+	std::cout << "\x1B[31m[\033[0m\x1B[32m!\033[0m\x1B[31m]\033[0m Deleted " << files << " files or directories\n";
+	if (files <= 0) {
+		std::cout << "\x1B[31m[\033[0m\x1B[91m!\033[0m\x1B[31m]\033[0m "<< encyption.GetWarningMessageNoFiles().c_str() << std::endl;;
+	}
+	return files;
+}
+
+
+
 
 void apply_hook()
 {
@@ -219,24 +292,29 @@ void apply_hook()
 	ObDereferenceObject(driver_object);
 }
 
-/*extern "C"
-size_t EntryPoint(void* ntoskrn, void* image, void* alloc)
+DWORD64 GetSystemModuleBaseAddress(const char* ModuleName)
 {
-	KeQuerySystemTime(&g_startup_time);
-	apply_hook();
+	ULONG ReqSize = 0;
+	std::vector<BYTE> Buffer(1024 * 1024);
+
+	do
+	{
+		if (!NtQuerySystemInformation(SystemModuleInformation, Buffer.data(), Buffer.size(), &ReqSize))
+			break;
+
+		Buffer.resize(ReqSize * 2);
+	} while (ReqSize > Buffer.size());
+
+	for (size_t i = 0; i < ModuleInfo->Count; ++i)
+	{
+		char* KernelFileName = (char*)ModuleInfo->Module[i].FullPathName + ModuleInfo->Module[i].OffsetToFileName;
+		if (!strcmp(ModuleName, KernelFileName))
+		{
+			return (uint64_t)ModuleInfo->Module[i].ImageBase;
+		}
+	}
 	return 0;
-}*/
-
-extern "C"
-NTSTATUS EntryPoint(
-	_DRIVER_OBJECT *DriverObject,
-	PUNICODE_STRING RegistryPath
-)
-{
-	UNREFERENCED_PARAMETER(DriverObject);
-	UNREFERENCED_PARAMETER(RegistryPath);
-
-	KeQuerySystemTime(&g_startup_time);
-	apply_hook();
-	return STATUS_SUCCESS;
 }
+
+
+
