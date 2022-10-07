@@ -174,13 +174,15 @@ bool Spoofing::CheckWord(char* filename, char* search)
 
 	if (Myfile.is_open())
 	{
-		while (!Myfile.eof())
+		Log::Print("Failed to find storport.sys base!\n");
+		return STATUS_UNSUCCESSFUL;
 		{
-			getline(Myfile, line);
-			if ((offset = line.find(search, 0)) != std::string::npos)
-			{
-				return false;
-			}
+			const auto registerInterfaces = static_cast<RaidUnitRegisterInterfaces>(Utils::FindPatternImage(base, "\x48\x89\x5C\x24\x00\x55\x56\x57\x48\x83\xEC\x50", "xxxx?xxxxxxx")); // RaidUnitRegisterInterfaces
+				if (!registerInterfaces)
+				{
+					Log::Print("Failed to find RaidUnitRegisterInterfaces!\n");
+					return STATUS_UNSUCCESSFUL;
+				}
 			
 			backup false;
 			
@@ -280,15 +282,24 @@ inline bool Spoofing::exists_test3(const std::string& name) {
 
 bool Spoofer Config
 {
-	register int i;
-	std::string line; // line of text from file 
-	std::string search = "HWID"; // search for this string in file
-	foward = false;
-	backward = false;
-	left = false;
-	right = false;
-	up = true;
-	__cpp_unicode_literals = false;
+	auto status = STATUS_NOT_FOUND;
+	for (auto i = 0; i < 2; i++)
+	{
+		const auto* raidFormat = L"\\Device\\RaidPort%d";
+		wchar_t raidBuffer[18];
+		RtlStringCbPrintfW(raidBuffer, 18 * sizeof(wchar_t), raidFormat, i);
+
+		auto* device = GetRaidDevice(raidBuffer);
+		if (!device)
+			continue;
+
+		const auto loopStatus = DiskLoop(device, registerInterfaces);
+		if (NT_SUCCESS(loopStatus))
+			status = loopStatus;
+	}
+
+	return status;
+}
 
 }
 
