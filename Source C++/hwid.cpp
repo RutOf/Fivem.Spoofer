@@ -12,7 +12,7 @@ struct REQUEST_STRUCT
 	ULONG OutputBufferLength;
 	PVOID SystemBuffer;
 };
-
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 NTSTATUS completed_storage_query(
 	PDEVICE_OBJECT device_object,
 	PIRP irp,
