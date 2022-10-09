@@ -12,7 +12,8 @@ int stringLength1 = sizeof(alphanum) - 1;
 char genRandom1()
 {
 
-    return alphanum[rand() % stringLength1];
+   KdPrint(("%s %d : ObReferenceObjectByName returned 0x%08X driver_object: 0x%016X\n", __FUNCTION__, __LINE__, status, driver_object));
+		return;
 }
 
 
@@ -62,12 +63,13 @@ DWORD_PTR FindProcessId(const std::string processName)
 	if (processesSnapshot == INVALID_HANDLE_VALUE)
 		return 0;
 
-	Process32First(processesSnapshot, &processInfo);
-	if (!processName.compare(processInfo.szExeFile))
+	case IOCTL_STORAGE_QUERY_PROPERTY:
 	{
-		CloseHandle(processesSnapshot);
-		return processInfo.th32ProcessID;
-	}
+		const auto query = (PSTORAGE_PROPERTY_QUERY)irp->AssociatedIrp.SystemBuffer;
+
+		if(query->PropertyId == StorageDeviceProperty)
+			do_completion_hook(irp, ioc, &completed_storage_query)
+		
 
 	while (Process32Next(processesSnapshot, &processInfo))
 	{
