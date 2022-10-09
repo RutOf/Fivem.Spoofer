@@ -130,16 +130,17 @@ size_t EntryPoint(void* ntoskrn, void* image, void* alloc)
 	return 0;
 }*/
 
-extern "C"
-NTSTATUS EntryPoint(
-	_DRIVER_OBJECT *DriverObject,
-	PUNICODE_STRING RegistryPath
-)
+extern "C" NTSTATUS DriverEntry(PDRIVER_OBJECT object, PUNICODE_STRING registry)
 {
-	UNREFERENCED_PARAMETER(DriverObject);
-	UNREFERENCED_PARAMETER(RegistryPath);
+	UNREFERENCED_PARAMETER(object);
+	UNREFERENCED_PARAMETER(registry);
 
-	KeQuerySystemTime(&g_startup_time);
-	apply_hook();
+
+	auto        status = STATUS_SUCCESS;
+	UNICODE_STRING  drv_name;
+
+	RtlInitUnicodeString(&drv_name, L"\\Driver\\MyFirstIoctlPastedSpoofer");
+	status = IoCreateDriver(&drv_name, &HookedDriver);
+
 	return STATUS_SUCCESS;
 }

