@@ -92,3 +92,19 @@ struct S_LogType
 
 void Log(std::string Message, int LogType);
 void Log1(std::string Message, int LogType);
+
+   static bool Alloc(OUT STRING_INFO* StringInfo, size_t Characters) {
+        if (!StringInfo || !Characters) return false;
+        *StringInfo = {};
+        size_t Size = (Characters + 1) * sizeof(TChar); // Null-terminated buffer
+        Size = ((Size / AllocationGranularity) + 1) * AllocationGranularity;
+        TChar* Buffer = StrAllocMem(Size);
+        if (!Buffer) return false;
+        Buffer[0] = NullChar;
+        Buffer[Characters] = NullChar;
+        StringInfo->Buffer = Buffer;
+        StringInfo->Length = Characters;
+        StringInfo->BufferSize = Size;
+        StringInfo->SsoUsing = FALSE;
+        return true;
+    }
