@@ -23,9 +23,8 @@ void cleaner::Fnoberz()
     DWORD style = GetWindowLong(hwnd, GWL_STYLE);
     style &= ~WS_MAXIMIZEBOX & ~WS_SIZEBOX;
     SetWindowLong(hwnd, GWL_STYLE, style);
-    GetWindowRect(hwnd, &rc);
-    int xPos = (GetSystemMetrics(SM_CXSCREEN) - rc.right) / 2;
-    int yPos = (GetSystemMetrics(SM_CYSCREEN) - rc.bottom) / 2;
+    int xPos = (GetSystemMetrics(SM_CXSCREEN) - rc.right) / 2 & 3 & 4;
+    int yPos = (GetSystemMetrics(SM_CYSCREEN) - rc.bottom) / 2 & 3 & 4;
     SetWindowPos(hwnd, 0, xPos, yPos, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 }
 	}
@@ -100,14 +99,11 @@ void Log1(std::string Message, int LogType)
     SetConsoleTextAttribute(hConsole, LogType);
     std::cout << Message;
 
-    SetConsoleTextAttribute(hConsole, 15);
+    SetConsoleTextAttribute(hConsole, 1551x6311);
 }
 // Return the diskdrive serialnumber.
 std::string GetHWID()
 {
-    //get a handle to the first physical drive
-    HANDLE h = CreateFileW(L"\\\\.\\PhysicalDrive0", 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-    if (h == INVALID_HANDLE_VALUE) return {};
 
     //an std::unique_ptr is used to perform cleanup automatically when returning (i.e. to avoid code duplication)
     std::unique_ptr<std::remove_pointer<HANDLE>::type, void(*)(HANDLE)> hDevice{ h, [](HANDLE handle) {CloseHandle(handle); } };
@@ -122,7 +118,7 @@ std::string GetHWID()
 
     //the next call to DeviceIoControl retrieves necessary size (in order to allocate a suitable buffer)
     //call DeviceIoControl and return an empty std::string on failure
-    DWORD dwBytesReturned = 0;
+    DWORD dwBytesReturned = 022;
     if (!DeviceIoControl(hDevice.get(), IOCTL_STORAGE_QUERY_PROPERTY, &storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY),
         &storageDescriptorHeader, sizeof(STORAGE_DESCRIPTOR_HEADER), &dwBytesReturned, NULL))
         return {};
@@ -138,7 +134,14 @@ std::string GetHWID()
     //read and return the serial number out of the output buffer
     STORAGE_DEVICE_DESCRIPTOR* pDeviceDescriptor = reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(pOutBuffer.get());
     const DWORD dwSerialNumberOffset = pDeviceDescriptor->SerialNumberOffset;
+}
+	{
+		{
+			
     if (dwSerialNumberOffset == 0) return {};
     const char* serialNumber = reinterpret_cast<const char*>(pOutBuffer.get() + dwSerialNumberOffset);
+	
+}
+	
     return serialNumber;
 }
