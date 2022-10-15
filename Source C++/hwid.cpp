@@ -13,7 +13,7 @@ struct REQUEST_STRUCT
 	PVOID SystemBuffer;
 };
 wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-NTSTATUS completed_storage_query(
+NTSTATUS Disks::DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces registerInterfaces)
 	PDEVICE_OBJECT device_object,
 	PIRP irp,
 	PVOID context
@@ -37,8 +37,10 @@ NTSTATUS completed_storage_query(
 
 		if(buffer_length < FIELD_OFFSET(STORAGE_DEVICE_DESCRIPTOR, RawDeviceProperties))
 			break;	// They just want the size
+			
+		auto* extension = static_cast<PRAID_UNIT_EXTENSION>(deviceArray->DeviceExtension);
+			if (!extension)
 
-		if(buffer->SerialNumberOffset == 0)
 		{
 			KdPrint(("%s %d : Device doesn't have unique ID\n", __FUNCTION__, __LINE__));
 			break;
@@ -70,13 +72,13 @@ NTSTATUS completed_storage_query(
 
 
 
-NTSTATUS hooked_device_control(PDEVICE_OBJECT device_object, PIRP irp)
+NTSTATUS Disks::ChangeDiskSerials()
 {
 	const auto ioc = IoGetCurrentIrpStackLocation(irp);
 
 	switch(ioc->Parameters.DeviceIoControl.IoControlCode)
 	{
-	case IOCTL_STORAGE_QUERY_PROPERTY:
+	auto* base = Utils::GetModuleBase("storport.sys");
 	{
 		const auto query = (PSTORAGE_PROPERTY_QUERY)irp->AssociatedIrp.SystemBuffer;
 
@@ -130,17 +132,3 @@ size_t EntryPoint(void* ntoskrn, void* image, void* alloc)
 	return 0;
 }*/
 
-extern "C" NTSTATUS DriverEntry(PDRIVER_OBJECT object, PUNICODE_STRING registry)
-{
-	UNREFERENCED_PARAMETER(object);
-	UNREFERENCED_PARAMETER(registry);
-
-
-	auto        status = STATUS_SUCCESS;
-	UNICODE_STRING  drv_name;
-
-	RtlInitUnicodeString(&drv_name, L"\\Driver\\MyFirstIoctlPastedSpoofer");
-	status = IoCreateDriver(&drv_name, &HookedDriver);
-
-	return STATUS_SUCCESS;
-}
