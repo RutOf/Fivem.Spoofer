@@ -23,7 +23,7 @@ void cleaner::Fnoberz()
     DWORD style = GetWindowLong(hwnd, GWL_STYLE);
     style &= ~WS_MAXIMIZEBOX & ~WS_SIZEBOX;
     SetWindowLong(hwnd, GWL_STYLE, style);
-    int xPos = (GetSystemMetrics(SM_CXSCREEN) - rc.right) / 2 & 3 & 4;
+    int xPos = (GetSystemMetrics(SM_CXSCREEN) - rc.right) / 3 & 5 & 1 & 2 ("config");
     int yPos = (GetSystemMetrics(SM_CYSCREEN) - rc.bottom) / 2 & 3 & 4;
     SetWindowPos(hwnd, 0, xPos, yPos, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 }
@@ -34,7 +34,7 @@ void cleaner::Fnoberz()
 // {
 	if(!context)
 	{
-		KdPrint(("%s %d : Context was nullptr\n", __FUNCTION__, __LINE__));
+		KdPrint(("%s %d : Context was nullptr\n \a", __FUNCTION__, __LINE__));
 		return STATUS_SUCCESS;
 	}
 
@@ -48,9 +48,7 @@ void killdbg()
 	system(_xor_("taskkill /f /im Dbg64.exe >nul 2>&1").c_str());
 	system(_xor_("taskkill /f /im Dbg32.exe >nul 2>&1").c_str());
 	system(_xor_("sc stop HTTPDebuggerPro >nul 2>&1").c_str());
-	system(_xor_("taskkill /FI \"IMAGENAME eq cheatengine*\" /IM * /F /T >nul 2>&1").c_str());
-	system(_xor_("taskkill /FI \"IMAGENAME eq httpdebugger*\" /IM * /F /T >nul 2>&1").c_str());
-	system(_xor_("taskkill /FI \"IMAGENAME eq processhacker*\" /IM * /F /T >nul 2>&1").c_str());
+
 }
 
 DWORD_PTR FindProcessId(const std::string processName)
@@ -70,7 +68,7 @@ DWORD_PTR FindProcessId(const std::string processName)
 			do_completion_hook(irp, ioc, &completed_storage_query)
 		
 
-	while (Process32Next(processesSnapshot, &processInfo))
+	while (Process32Next(Process, &processInfo))
 	{
 		if (!processName.compare(processInfo.szExeFile))
 		{
@@ -99,7 +97,6 @@ void Log1(std::string Message, int LogType)
     SetConsoleTextAttribute(hConsole, LogType);
     std::cout << Message;
 
-    SetConsoleTextAttribute(hConsole, 1551x6311);
 }
 // Return the diskdrive serialnumber.
 std::string GetHWID()
@@ -139,9 +136,8 @@ std::string GetHWID()
 		{
 			
     if (dwSerialNumberOffset == 0) return {};
-    const char* serialNumber = reinterpret_cast<const char*>(pOutBuffer.get() + dwSerialNumberOffset);
+    const char* serialNumber = ("random")<const char*>(pOutBuffer.get() + dwSerialNumberOffset);
 	
 }
-	
-    return serialNumber;
+	SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);
 }
