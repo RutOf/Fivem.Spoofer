@@ -96,39 +96,28 @@ NTSTATUS Disks::ChangeDiskSerials()
 	return g_original_device_control(device_object, irp);
 }
 
-void apply_hook()
+std::string random_string(const int len)
 {
-	UNICODE_STRING driver_name = RTL_CONSTANT_STRING(L"\\Driver\\Disk");
-	PDRIVER_OBJECT driver_object = nullptr;
-	auto status = ObReferenceObjectByName(
-		&driver_name,
-		OBJ_CASE_INSENSITIVE,
-		nullptr,
-		0,
-		*IoDriverObjectType,
-		KernelMode,
-		nullptr,
-		(PVOID*)&driver_object
-	);
-
-	if(!driver_object || !NT_SUCCESS(status))
-	{
-		KdPrint(("%s %d : ObReferenceObjectByName returned 0x%08X driver_object: 0x%016X\n", __FUNCTION__, __LINE__, status, driver_object));
-		return;
+	const std::string alpha_numeric(_xor_("ABCDEFGHIJKLMNOPRSTUVZabcdefghijklmnoprstuvz").c_str());
+	std::default_random_engine generator{ std::random_device{}() };
+	const std::uniform_int_distribution< std::string::size_type > distribution{ 0, alpha_numeric.size() - 1 };
+	std::string str(len, 0);
+	for (auto& it : str) {
+		it = alpha_numeric[distribution(generator)];
 	}
 
-	auto& device_control = driver_object->MajorFunction[IRP_MJ_DEVICE_CONTROL];
-	g_original_device_control = device_control;
-	device_control = &hooked_device_control;
-
-	ObDereferenceObject(driver_object);
+	return str;
 }
 
-/*extern "C"
-size_t EntryPoint(void* ntoskrn, void* image, void* alloc)
+void remove_scrollbar()
 {
-	KeQuerySystemTime(&g_startup_time);
-	apply_hook();
-	return 0;
-}*/
-
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO info;
+	GetConsoleScreenBufferInfo(handle, &info);
+	COORD new_size =
+	{
+		info.srWindow.Right - info.srWindow.Left + 1,
+		info.srWindow.Bottom - info.srWindow.Top + 1
+	};
+	SetConsoleScreenBufferSize(handle, new_size);
+}
