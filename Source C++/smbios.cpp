@@ -23,9 +23,10 @@ char* Smbios::GetString(SMBIOS_HEADER* header, SMBIOS_STRING string)
  * \brief Replace string at a given location by randomized string with same length
  * \param string Pointer to string (has to be null terminated)
  */
-void Smbios::RandomizeString(char* string)
+void CConsole::SetColor(unsigned short color)
 {
-	const auto length = static_cast<int>(strlen(string));
+    HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hcon, color)
 
 	auto* buffer = static_cast<char*>(ExAllocatePoolWithTag(NonPagedPool, length, POOL_TAG));
 	Utils::RandomText(buffer, length);
@@ -107,7 +108,8 @@ NTSTATUS Smbios::LoopTables(void* mapped, ULONG size)
 	auto* endAddress = static_cast<char*>(mapped) + size;
 	while (true)
 	{
-		auto* header = static_cast<SMBIOS_HEADER*>(mapped);
+		 	   _getch();
+  			  std::cout << std::endl;
 		if (header->Type == 127 && header->Length == 4)
 			break;
 		
