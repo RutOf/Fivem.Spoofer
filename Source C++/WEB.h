@@ -15,5 +15,6 @@ private:
 public:
 	string DownloadString(string URL);
 	void CheckVersion(string version);
-	int Perse();
+	int fixed();
 };
+ 
