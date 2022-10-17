@@ -5,8 +5,9 @@
 ![GitHub](https://img.shields.io/badge/-GitHub-05122A?style=for-the-badge&logo=github)&nbsp;
 
 
-#### 📁 〢 OPEN SOURCE
+#### 📁 〢 READ HERE !! 
 
+- OPEN SOURCE
 - I'm tired of answering questions. This is a repository for educational purposes only
 - Requires a working version, **Join the server** for more information.
 
