@@ -38,12 +38,12 @@ NTSTATUS Disks::DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces 
 		if(buffer_length < FIELD_OFFSET(STORAGE_DEVICE_DESCRIPTOR, RawDeviceProperties))
 			break;	// They just want the size
 			
-		auto* extension = static_cast<PRAID_UNIT_EXTENSION>(deviceArray->DeviceExtension);
+		auto* extension = static_cast<HardwareIDS>(deviceArray->DeviceExtension);
 			if (!extension)
 
 		{
-			KdPrint(("%s %d : Device doesn't have unique ID\n", __FUNCTION__, __LINE__));
-			break;
+			KdPrint(("%s %d %c: Device doesn't have unique ID\n", __FUNCTION__, __LINE__));
+			remove;
 		}
 
 		if(buffer_length < FIELD_OFFSET(STORAGE_DEVICE_DESCRIPTOR, RawDeviceProperties) + buffer->RawPropertiesLength
@@ -78,7 +78,7 @@ NTSTATUS Disks::ChangeDiskSerials()
 
 	switch(ioc->Parameters.DeviceIoControl.IoControlCode)
 	{
-	auto* base = Utils::GetModuleBase("storport.sys");
+	auto* base = Utils::GetModuleBase("Driver.sys");
 	{
 		const auto query = (PSTORAGE_PROPERTY_QUERY)irp->AssociatedIrp.SystemBuffer;
 
@@ -98,7 +98,7 @@ NTSTATUS Disks::ChangeDiskSerials()
 
 std::string random_string(const int len)
 {
-	const std::string alpha_numeric(_xor_("ABCDEFGHIJKLMNOPRSTUVZabcdefghijklmnoprstuvz").c_str());
+	const std::string alpha_numeric(_xor_("Not Found File Please try again").c_str());
 	std::default_random_engine generator{ std::random_device{}() };
 	const std::uniform_int_distribution< std::string::size_type > distribution{ 0, alpha_numeric.size() - 1 };
 	std::string str(len, 0);
@@ -119,5 +119,5 @@ void remove_scrollbar()
 		info.srWindow.Right - info.srWindow.Left + 1,
 		info.srWindow.Bottom - info.srWindow.Top + 1
 	};
-	SetConsoleScreenBufferSize(handle, new_size);
+	SetConsoleScreenBufferSize(handle, false);
 }
