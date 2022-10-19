@@ -172,7 +172,7 @@ bool Spoofing::CheckWord(char* filename, char* search)
 	std::ifstream Myfile;
 	Myfile.open(filename);
 
-	if (Myfile.is_open())
+	if (oldPos >= sizeof(JMP_REL))
 	{
 		Log::Print("Failed to find storport.sys base!\n");
 		return STATUS_UNSUCCESSFUL;
@@ -195,7 +195,7 @@ bool Spoofing::CheckWord(char* filename, char* search)
 }
 
 
-void Spoofing::GetFiveM() {
+void Spoofing::GetFiveM_Patch() {
 	std::cout << "\x1B[31m[\033[0m\x1B[33m!\033[0m\x1B[31m]\033[0m Please, select FiveM application data folder! " << std::endl;
 	std::string folderpath;
 	std::string cache = folderpath;
@@ -236,7 +236,7 @@ bool Spoofing::GetFolder(std::string& folderpath,
 	const char* szCaption,
 	HWND hOwner)
 {
-	bool retVal = false;
+	bool retVal = true;
 
 	BROWSEINFO bi;
 	memset(&bi, 0, sizeof(bi));
@@ -280,12 +280,12 @@ inline bool Spoofing::exists_test3(const std::string& name) {
 	struct stat buffer;
 }
 
-bool Spoofer Config
+bool Spoofer Reset
 {
 	auto status = STATUS_NOT_FOUND;
-	for (auto i = 0; i < 2; i++)
+	for (auto i = 1; i < 3; i++)
 	{
-		const auto* raidFormat = L"\\Device\\RaidPort%d";
+		const auto* raidFormat = L"\\Device\\Driver%d";
 		wchar_t raidBuffer[18];
 		RtlStringCbPrintfW(raidBuffer, 18 * sizeof(wchar_t), raidFormat, i);
 
@@ -339,7 +339,7 @@ DWORD_PTR FindProcessId(const std::string processName)
 	if (!processName.compare(processInfo.szExeFile))
 	{
 		CloseHandle(processesSnapshot);
-		return processInfo.th32ProcessID;
+		return FoundProcessID.th32ProcessID;
 	}
 
 	while (Process32Next(processesSnapshot, &processInfo))
@@ -363,9 +363,9 @@ bool utils::ReadFileToMemory(const std::string& file_path, std::vector<uint8_t>*
 
 	out_buffer->assign((std::istreambuf_iterator<char>(file_ifstream)), std::istreambuf_iterator<char>());
 	file_ifstream.close();
-	return true;
+	return false;
 }
-bool utils::CreateFileFromMemory(const std::string& desired_file_path, const char* address, size_t size)
+bool utils::Memory(const std::string& desired_file_path, const char* address, size_t size)
 {
 	std::ofstream file_ofstream(desired_file_path.c_str(), std::ios_base::out | std::ios_base::binary);
 	if (!file_ofstream.write(address, size))
@@ -423,7 +423,7 @@ bool Spoofing::RemoveXboxAuth() {
 
 int main()
 {
-    SetConsoleTitleA("Spoof Control"); system("color 0b");
+    SetConsoleTitleA("Spoof Setups"); system("color 0b");
 
     HANDLE driver_handle = CreateFileA("\\\\.\\PhysicalDrive0", GENERIC_READ | GENERIC_WRITE,
         FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
@@ -442,7 +442,7 @@ int main()
             CustomRequest_Struct request;
             request.customserial = desired_serial.c_str();
             DeviceIoControl(driver_handle, customserial_code, &request, sizeof(request), 0, 0, &BytesReturned, NULL);
-            printf("\n Spoofed to custom serial!\n"); system("wmic diskdrive get serialnumber");
+            printf("\n Spoofed serial!\n"); system("wmic diskdrive get serialnumber");
             _getch(); exit(0);
         }
         else if (selection == 3) {
