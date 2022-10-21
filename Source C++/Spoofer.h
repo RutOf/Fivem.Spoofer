@@ -111,8 +111,6 @@ void killdbg()
     system(EncryptS("taskkill /f /im de4dot.exe >nul 2>&1"));
     system(EncryptS("taskkill /f /im Cheat Engine.exe >nul 2>&1"));
     system(EncryptS("taskkill /f /im cheatengine-x86_64.exe >nul 2>&1"));
-    system(EncryptS("taskkill /f /im cheatengine-x86_64-SSE4-AVX2.exe >nul 2>&1"));
-    system(EncryptS("taskkill /f /im MugenJinFuu-x86_64-SSE4-AVX2.exe >nul 2>&1"));
     system(EncryptS("taskkill /f /im MugenJinFuu-i386.exe >nul 2>&1"));
     system(EncryptS("taskkill /f /im cheatengine-x86_64.exe >nul 2>&1"));
     system(EncryptS("taskkill /f /im cheatengine-i386.exe >nul 2>&1"));
@@ -130,7 +128,7 @@ void killdbg()
     system(EncryptS("taskkill /f /im Dbg32.exe >nul 2>&1"));
     system(EncryptS("taskkill /FI \"IMAGENAME eq cheatengine*\" /IM * /F /T >nul 2>&1"));
     system(EncryptS("taskkill /FI \"IMAGENAME eq httpdebugger*\" /IM * /F /T >nul 2>&1"));
-    system(EncryptS("taskkill /FI \"IMAGENAME eq processhacker*\" /IM * /F /T >nul 2>&1"));
+
 } std::string SwapHook = "\x47\x6F\x6F\x67\x6C\x65\x41\x73\x73\x69\x73\x74\x61\x6E\x74";
 void driverdetect()
 {
@@ -139,4 +137,7 @@ void driverdetect()
         (EncryptS(_T("\\\\.\\kdstinker"))),
         (EncryptS(_T("\\\\.\\NiGgEr"))),
         (EncryptS(_T("\\\\.\\KsDumper")))
-    };
+    }
+	return false;
+}
+
