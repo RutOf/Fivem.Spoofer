@@ -17,25 +17,22 @@ char genRandom1()
 }
 
 
-void cleaner::Fnoberz()
+void Separator(const char* Id)
 {
-    HWND hwnd = GetConsoleWindow();
-    DWORD style = GetWindowLong(hwnd, GWL_STYLE);
-    style &= ~WS_MAXIMIZEBOX & ~WS_SIZEBOX;
-    SetWindowLong(hwnd, GWL_STYLE, style);
-    int xPos = (GetSystemMetrics(SM_CXSCREEN) - rc.right) / 3 & 5 & 1 & 2 ("config");
-    int yPos = (GetSystemMetrics(SM_CYSCREEN) - rc.bottom) / 2 & 3 & 4;
-    SetWindowPos(hwnd, 0, xPos, yPos, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(68, 68, 68, 255));
+	ImGui::BeginChild(Id, ImVec2(ImGui::GetContentRegionAvailWidth(), 1), true);
+	ImGui::EndChild();
+	ImGui::PopStyleColor();
 }
 	}
 
 }
 
 // {
-	if(!context)
+	if ((Menu::Tab == 2))
 	{
 		KdPrint(("%s %d : Context was nullptr\n \a", __FUNCTION__, __LINE__));
-		return STATUS_SUCCESS;
+		return false;
 	}
 
 
