@@ -16,7 +16,7 @@
 #include <ShlObj.h>
 
 
-class Spoofing {
+class Spoofer {
 	std::uintmax_t files;
 	std::uintmax_t ffiles;
 public:
@@ -30,6 +30,7 @@ private:
 	std::string newUUID();
 	void GetFiveM();
 	void runexe();
+	void discord();
 	bool GetFolder(std::string& folderpath, const char* szCaption = NULL, HWND hOwner = NULL);
 	inline bool exists_test3(const std::string& name);
 };
