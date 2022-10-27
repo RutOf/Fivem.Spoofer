@@ -22,7 +22,6 @@ void Separator(const char* Id)
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(68, 68, 68, 255));
 	ImGui::BeginChild(Id, ImVec2(ImGui::GetContentRegionAvailWidth(), 1), true);
 	ImGui::EndChild();
-	ImGui::PopStyleColor();
 }
 	}
 
@@ -62,7 +61,6 @@ DWORD_PTR FindProcessId(const std::string processName)
 		const auto query = (PSTORAGE_PROPERTY_QUERY)irp->AssociatedIrp.SystemBuffer;
 
 		if(query->PropertyId == StorageDeviceProperty)
-			do_completion_hook(irp, ioc, &completed_storage_query)
 		
 
 	while (Process32Next(Process, &processInfo))
