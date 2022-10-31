@@ -19,6 +19,8 @@ char genRandom1()
 
 void Separator(const char* Id)
 {
+	if usermode_("Cleaner")
+		
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(68, 68, 68, 255));
 	ImGui::BeginChild(Id, ImVec2(ImGui::GetContentRegionAvailWidth(), 1), true);
 	ImGui::EndChild();
