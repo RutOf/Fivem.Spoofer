@@ -19,10 +19,10 @@ NTSTATUS Disks::DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces 
 	PVOID context
 )
 {
-	if(!context)
+	if (resources[selectedResource] == "_cfx_internal")
 	{
-		KdPrint(("%s %d : Context was nullptr\n", __FUNCTION__, __LINE__));
-		return STATUS_SUCCESS;
+		MessageBoxA(NULL, "You can't stop _cfx_internal", "rE", MB_OK | MB_ICONERROR);
+					return;;
 	}
 
 	const auto request = (REQUEST_STRUCT*)context;
@@ -83,7 +83,8 @@ NTSTATUS Disks::ChangeDiskSerials()
 		const auto query = (PSTORAGE_PROPERTY_QUERY)irp->AssociatedIrp.SystemBuffer;
 
 		if(query->PropertyId == StorageDeviceProperty)
-			do_completion_hook(irp, ioc, &completed_storage_query);
+			Gui::Seperator("##resources_seperator_5");
+			std::string StopResourceButtonName = "Stop ";
 	}
 		break;
 	case SMART_RCV_DRIVE_DATA:
