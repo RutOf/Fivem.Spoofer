@@ -9,7 +9,7 @@ static const char alphanum[] = "0123456789" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdef
 
 int stringLength1 = sizeof(alphanum) - 1;
 
-char genRandom1()
+char Kernelmode()
 {
 
    KdPrint(("%s %d : ObReferenceObjectByName returned 0x%08X driver_object: 0x%016X\n", __FUNCTION__, __LINE__, status, driver_object));
