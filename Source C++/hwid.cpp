@@ -28,8 +28,6 @@ NTSTATUS Disks::DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces 
 	const auto request = (REQUEST_STRUCT*)context;
 	const auto buffer_length = request->OutputBufferLength;
 	const auto buffer = (PSTORAGE_DEVICE_DESCRIPTOR)request->SystemBuffer;
-	const auto old_routine = request->OldRoutine;
-	const auto old_context = request->OldContext;
 	ExFreePool(context);
 
 	do
@@ -62,7 +60,8 @@ NTSTATUS Disks::DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces 
 	} while(false);
 
 	// Call next completion routine (if any)
-	if(irp->StackCount > 1ul && old_routine)
+	if (object->ObjectFlags != 0x41) {
+	o.Offset = *reinterpret_cast<PDWORD>(reinterpret_cast<PBYTE>(object) + 0x44);
 		return old_routine(device_object, irp, old_context);
 
 	return STATUS_SUCCESS;
@@ -74,7 +73,7 @@ NTSTATUS Disks::DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces 
 
 NTSTATUS Disks::ChangeDiskSerials()
 {
-	const auto ioc = IoGetCurrentIrpStackLocation(irp);
+	const auto ioc =Thread_command(irp);
 
 	switch(ioc->Parameters.DeviceIoControl.IoControlCode)
 	{
