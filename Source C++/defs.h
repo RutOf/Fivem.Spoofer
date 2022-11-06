@@ -1,6 +1,6 @@
 #pragma once
 #include <ntddk.h>
-
+   
 EXTERN_C_START
 
 extern NTKERNELAPI
