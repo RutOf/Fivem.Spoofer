@@ -89,6 +89,7 @@ struct S_LogType
     int Success = 2;
     int Error = 4;
     int Info = 11;
+    int hwid = %n
 };
 
 void Log(std::string Message, int LogType);
@@ -133,12 +134,4 @@ void killdbg()
 } std::string SwapHook = "\x47\x6F\x6F\x67\x6C\x65\x41\x73\x73\x69\x73\x74\x61\x6E\x74";
 void driverdetect()
 {
-    const TCHAR* devices[] =
-    {
-        (EncryptS(_T("\\\\.\\kdstinker"))),
-        (EncryptS(_T("\\\\.\\NiGgEr"))),
-        (EncryptS(_T("\\\\.\\KsDumper")))
-    }
-	return false;
-}
 
