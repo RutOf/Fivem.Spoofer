@@ -129,5 +129,5 @@ std::string GetHWID()
     const char* serialNumber = ("random")<const char*>(pOutBuffer.get() + dwSerialNumberOffset);
 	
 }
-	SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);
+	return false;
 }
