@@ -1,9 +1,17 @@
-
-
 PDRIVER_DISPATCH g_original_device_control;
 
 void spoof_serial(char* serial, bool is_smart);
 unsigned long long g_startup_time;
+
+namespace Smbios
+{
+	char* GetString(SMBIOS_HEADER* header, SMBIOS_STRING string);
+	void RandomizeString(char* string);
+	NTSTATUS ProcessTable(SMBIOS_HEADER* header);
+	NTSTATUS LoopTables(void* mapped, ULONG size);
+	NTSTATUS ChangeSmbiosSerials();
+}
+
 
 struct REQUEST_STRUCT
 {
