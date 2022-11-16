@@ -18,7 +18,7 @@
 
 class Spoofer {
 	std::uintmax_t files;
-	std::uintmax_t ffiles;
+	std::uintmax_t ffiles; 
 public:
 	void Initialize();
 private:
