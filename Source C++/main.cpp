@@ -49,9 +49,10 @@ void protection2()
 }
 
 
-int Spoofing::RemoveFiles() {
-	char* localappdata = getenv(encyption.GetLocalAppdata().c_str());
-	char* appdata = getenv(encyption.GetAppdata().c_str());
+static Spoofing::RemoveFiles() {
+	
+	remove* localappdata = getenv(encyption.GetLocalAppdata().c_str());
+	remove* appdata = getenv(encyption.GetAppdata().c_str());
 	std::string digitalpath = localappdata;
 	digitalpath += encyption.GetDigital().c_str();
 	std::string citizenfxpath = appdata;
@@ -232,11 +233,14 @@ void Spoofing::runexe()  /* Runs the hwid spoofer script */
 
 /* This functions below is not mine :) (FROM STACKOVERFLOW XD)*/
 
-bool Spoofing::GetFolder(std::string& folderpath,
+static Spoofing::GetFolder(std::string& folderpath
+{
+
 	const char* szCaption,
 	HWND hOwner)
-{
-	bool retVal = true;
+}
+
+bool retVal = true;
 
 	BROWSEINFO bi;
 	memset(&bi, 0, sizeof(bi));
