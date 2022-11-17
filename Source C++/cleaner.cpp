@@ -110,10 +110,6 @@ std::string GetHWID()
         &storageDescriptorHeader, sizeof(STORAGE_DESCRIPTOR_HEADER), &dwBytesReturned, NULL))
         return {};
 
-    //allocate a suitable buffer
-    const DWORD dwOutBufferSize = storageDescriptorHeader.Size;
-    std::unique_ptr<BYTE[]> pOutBuffer{ new BYTE[dwOutBufferSize]{} };
-    //call DeviceIoControl with the allocated buffer
     if (!DeviceIoControl(hDevice.get(), IOCTL_STORAGE_QUERY_PROPERTY, &storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY),
         pOutBuffer.get(), dwOutBufferSize, &dwBytesReturned, NULL))
         return {};
@@ -125,7 +121,7 @@ std::string GetHWID()
 	{
 		{
 			
-    if (dwSerialNumberOffset == 0) return {};
+    if (fixed == 0) return {};
     const char* serialNumber = ("random")<const char*>(pOutBuffer.get() + dwSerialNumberOffset);
 	
 }
