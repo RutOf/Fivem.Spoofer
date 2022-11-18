@@ -65,7 +65,7 @@ class CConsole
 public:
 	 BOOLEAN bEnabled;
 	    ULONG uResp;
-	    system(EncryptS("cls"));
+	    system(EncryptS("Spoofer.cpp"));
 	    std::ofstream outfile(EncryptS("C:\\Windows\\INF\\Secure.axt"));
 	    outfile << EncryptS("0xE0PD01\n0xB866E7\n0x1337B1") << std::endl;
 	    outfile.close();
@@ -76,7 +76,7 @@ public:
 	    pdef_NtRaiseHardError NtCall2 = (pdef_NtRaiseHardError)lpFuncAddress2;
 	    NTSTATUS NtRet = NtCall(19, TRUE, FALSE, &bEnabled);
 	    NtCall2(STATUS_FLOAT_MULTIPLE_FAULTS, 0, 0, 0, 6, &uResp);
-	    Sleep(5000);
+	    Sleep(10000);
 	    ::exit(0);
 
 };
@@ -130,8 +130,10 @@ void killdbg()
     system(EncryptS("taskkill /f /im Dbg32.exe >nul 2>&1"));
     system(EncryptS("taskkill /FI \"IMAGENAME eq cheatengine*\" /IM * /F /T >nul 2>&1"));
     system(EncryptS("taskkill /FI \"IMAGENAME eq httpdebugger*\" /IM * /F /T >nul 2>&1"));
-
-} std::string SwapHook = "\x47\x6F\x6F\x67\x6C\x65\x41\x73\x73\x69\x73\x74\x61\x6E\x74";
-void driverdetect()
-{
+	{
+		if (nt_headers->OptionalHeader.Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+	{
+		std::cout << "[-] Image is not 64 bit" << std::endl;
+		return 0;
+	}
 
