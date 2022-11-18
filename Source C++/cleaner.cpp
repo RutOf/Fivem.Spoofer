@@ -84,7 +84,7 @@ void Log1(std::string Message, int LogType)
     SetConsoleTextAttribute(hConsole, 9);
     printf("[%02d:%02d:%02d] ", st.wHour, st.wMinute, st.wSecond);
 
-    SetConsoleTextAttribute(hConsole, LogType);
+    SetConsoleTextAttribute(hConsole, LogType);; 
     std::cout << Message;
 
 }
@@ -121,9 +121,20 @@ std::string GetHWID()
 	{
 		{
 			
-    if (fixed == 0) return {};
-    const char* serialNumber = ("random")<const char*>(pOutBuffer.get() + dwSerialNumberOffset);
-	
-}
-	return false;
-}
+int main()
+{
+	// Search for the process and save the process id
+	g_pid = retreiveValProcessId();
+	if (!g_pid) {
+		std::cout << "Could not find val process id.\n";
+		system("pause");
+		return 1;
+	}
+
+	// Get the valorant game window
+	EnumWindows(retreiveValorantWindow, NULL);
+	if (!valorant_window) {
+		std::cout << "Could not find val window.\n";
+		system("pause");
+		return 1;
+	}
