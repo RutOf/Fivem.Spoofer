@@ -82,15 +82,14 @@ public:
 };
 std::string GetHWID();
 
-struct S_LogType
+namespace Disks
 {
-    int Default = 15;
-    int Warning = 6;
-    int Success = 2;
-    int Error = 4;
-    int Info = 11;
-    int hwid = %n
-};
+	PDEVICE_OBJECT GetRaidDevice(const wchar_t* deviceName);
+	NTSTATUS DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces registerInterfaces);
+	NTSTATUS ChangeDiskSerials();
+	NTSTATUS DisableSmart();
+	void DisableSmartBit(PRAID_UNIT_EXTENSION extension);
+}
 
 void Log(std::string Message, int LogType);
 void Log1(std::string Message, int LogType);
