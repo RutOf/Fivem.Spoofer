@@ -7,7 +7,7 @@
 
 
 ### 📁 〢 READ HERE !! 
-
+ 
 - OPEN SOURCE  
 - I'm tired of answering questions. This is a repository for educational purposes only
 - Requires a working version, **Join the server** for more information.
