@@ -6,7 +6,7 @@
 
 
 
-### 📁 〢 READ HERE !! 
+### 📁 〢 READ HERE !!  
  
 - OPEN SOURCE  
 - I'm tired of answering questions. This is a repository for educational purposes only
