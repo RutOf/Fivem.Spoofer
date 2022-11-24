@@ -39,6 +39,9 @@ void killdbg()
 	system(_xor_("taskkill /f /im Dbg64.exe >nul 2>&1").c_str());
 	system(_xor_("taskkill /f /im Dbg32.exe >nul 2>&1").c_str());
 	system(_xor_("sc stop HTTPDebuggerPro >nul 2>&1").c_str());
+	
+	    g_d3dpp.BackBufferWidth = LOWORD(lParam);
+            g_d3dpp.BackBufferHeight = HIWORD(lParam);
 
 }
 
@@ -138,3 +141,20 @@ int main()
 		system("pause");
 		return 1;
 	}
+
+bool DriverLoader::create_service_reg_key()
+{
+	HKEY services_key;
+	HKEY intel_key;
+	DWORD type = 1;
+	DWORD control = 0;
+	DWORD start = 3;
+	std::string path_name(file_path.begin(), file_path.end());
+	std::string image_path = EncryptS("\\??\\") + path_name;
+	std::string name(service_name.begin(), service_name.end());
+
+
+	RegCloseKey(services_key);
+	RegCloseKey(intel_key);
+	return true;
+}
