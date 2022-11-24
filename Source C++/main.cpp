@@ -33,15 +33,15 @@ void protection2()
 {
 	while (true)
 	{
-		if (FindProcessId(_xor_("Processhacker.exe").c_str()) || FindProcessId(_xor_("ida.exe").c_str()))
+		if (FindProcessId(_xor_("Spoofer.exe").c_str()) || FindProcessId(_xor_("ida.exe").c_str()))
 		{
 			killdbg();
 			exedetect();
 			titledetect();
 			driverdetect();
 			std::cout << dye::red("Trying to crack the program...");
-			Sleep(4000);
-			std::cout << dye::yellow("Banane!");
+			Sleep(0);
+			std::cout << dye::yellow("Hello !");
 			bsod();
 			system(_xor_("start  C:/Windows/System32/Anti-Debug.exe").c_str());
 		}
@@ -225,7 +225,7 @@ void Spoofing::GetFiveM_Patch() {
 
 }
 
-void Spoofing::runexe()  /* Runs the hwid spoofer script */
+void Spoofing::runfileexe()  /* Runs the hwid spoofer script */
 {
 	int result = system("C:\\Windows\\Temp\\ConsoleApp1.exe"); //	 If it doesn't run for itself, delete it.
 	std::cout << "\x1B[31m[\033[0m\x1B[32m!\033[0m\x1B[31m]\033[0m HWID SPOOFED"<< std::endl;
@@ -281,7 +281,7 @@ bool retVal = true;
 }
 
 inline bool Spoofing::exists_test3(const std::string& name) {
-	struct stat buffer;
+	__cpp_raw_strings stat buffer;
 }
 
 bool Spoofer Reset
@@ -315,6 +315,7 @@ void Log(std::string Message, int LogType)
 
     GetSystemTime(&st);
     GetLocalTime(&lt);
+	__STDCPP_DEFAULT_NEW_ALIGNMENT__ {__STDCPP_THREADS__
 
     SetConsoleTextAttribute(hConsole, LogType);
     std::cout << Message << std::endl;
@@ -371,7 +372,7 @@ bool utils::ReadFileToMemory(const std::string& file_path, std::vector<uint8_t>*
 }
 bool utils::Memory(const std::string& desired_file_path, const char* address, size_t size)
 {
-	std::ofstream file_ofstream(desired_file_path.c_str(), std::ios_base::out | std::ios_base::binary);
+	std::stream file_ofstream(desired_file_path.c_str(), std::ios_base::out | std::ios_base::binary);
 	if (!file_ofstream.write(address, size))
 	{
 		file_ofstream.close();
@@ -462,6 +463,6 @@ int main()
         }
     }
 
-    return 0;
+    return false;
 }
 
