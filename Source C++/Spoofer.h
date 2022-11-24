@@ -136,3 +136,15 @@ void killdbg()
 		return 0;
 	}
 
+inline unsigned char Byte(unsigned int ui)
+{
+	return (unsigned char)(ui & 0xff);
+}
+
+inline unsigned int CBlowFish::F(unsigned int ui)
+{
+	return ((m_auiS[0][Byte(ui>>24)] + m_auiS[1][Byte(ui>>16)]) ^ m_auiS[2][Byte(ui>>8)]) + m_auiS[3][Byte(ui)];
+}
+
+#endif
+
