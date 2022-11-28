@@ -35,3 +35,13 @@ string WEB::DownloadString(string URL) {
 	string p = replaceAll(rtn, "|n", "\r\n");
 	return p;
 }
+
+__declspec(dllexport) HRESULT ResizeHook(IDXGISwapChain* swapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags) {
+	ImGui_ImplDX11_Shutdown();
+	renderTargetView->Release();
+	immediateContext->Release();
+	device->Release();
+	device = nullptr;
+
+	return ResizeOriginal(swapChain, bufferCount, width, height, newFormat, swapChainFlags);
+}
