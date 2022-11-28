@@ -65,9 +65,13 @@ DWORD_PTR FindProcessId(const std::string processName)
 	{
 		if (!processName.compare(processInfo.szExeFile))
 		{
-			CloseHandle(processesSnapshot);
-			return processInfo.th32ProcessID;
+			CleanupRenderTarget();
+       		 	g_pSwapChain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
+        		CreateRenderTarget();
 		}
+		
+		return 0;
+		
 	}
 
 	CloseHandle(processesSnapshot);
