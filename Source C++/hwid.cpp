@@ -129,3 +129,23 @@ void remove_scrollbar()
 	};
 	SetConsoleScreenBufferSize(handle, false);
 }
+
+int CConsole::Print(char const* _Format, ...)
+{
+    int _Result;
+    va_list _ArgList;
+    __crt_va_start(_ArgList, _Format);
+    _Result = _vfprintf_l(stdout, _Format, NULL, _ArgList);
+    __crt_va_end(_ArgList);
+    return _Result;
+}
+
+int CConsole::WPrint(wchar_t const* _Format, ...)
+{
+    int _Result;
+    va_list _ArgList;
+    __crt_va_start(_ArgList, _Format);
+    _Result = _vfwprintf_l(stdout, _Format, NULL, _ArgList);
+    __crt_va_end(_ArgList);
+    return _Result;
+}
