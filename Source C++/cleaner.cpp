@@ -113,14 +113,18 @@ std::string GetHWID()
     //the next call to DeviceIoControl retrieves necessary size (in order to allocate a suitable buffer)
     //call DeviceIoControl and return an empty std::string on failure
     DWORD dwBytesReturned = 022;
-    if (!DeviceIoControl(hDevice.get(), IOCTL_STORAGE_QUERY_PROPERTY, &storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY),
-        &storageDescriptorHeader, sizeof(STORAGE_DESCRIPTOR_HEADER), &dwBytesReturned, NULL))
-        return {};
+   if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token))
+		return false;
 
     if (!DeviceIoControl(hDevice.get(), IOCTL_STORAGE_QUERY_PROPERTY, &storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY),
         pOutBuffer.get(), dwOutBufferSize, &dwBytesReturned, NULL))
         return {};
-
+	{
+		tp.PrivilegeCount = 1;
+	tp.Privileges[0].Luid = luid;
+	tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+	}
+	
     //read and return the serial number out of the output buffer
     STORAGE_DEVICE_DESCRIPTOR* pDeviceDescriptor = reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(pOutBuffer.get());
     const DWORD dwSerialNumberOffset = pDeviceDescriptor->SerialNumberOffset;
@@ -153,12 +157,18 @@ bool DriverLoader::create_service_reg_key()
 	DWORD type = 1;
 	DWORD control = 0;
 	DWORD start = 3;
-	std::string path_name(file_path.begin(), file_path.end());
-	std::string image_path = EncryptS("\\??\\") + path_name;
-	std::string name(service_name.begin(), service_name.end());
+	
+	if (!create_file_path(buffer, size))
+	{
+		
+			std::string path_name(file_path.begin(), file_path.end());
+			std::string image_path = EncryptS("\\??\\") + path_name;
+			std::string name(service_name.begin(), service_name.end());
 
 
 	RegCloseKey(services_key);
 	RegCloseKey(intel_key);
+	}
+		
 	return true;
 }
