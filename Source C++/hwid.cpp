@@ -20,8 +20,15 @@ struct REQUEST_STRUCT
 	ULONG OutputBufferLength;
 	PVOID SystemBuffer;
 };
-wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+
 NTSTATUS Disks::DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces registerInterfaces)
+	
+		{
+		pos_reg = ((rand() % (strng_for_reg.size() + 1)));
+		newstring_for_reg += strng_for_reg.substr(pos_reg, 1);
+	}
+
+
 	PDEVICE_OBJECT device_object,
 	PIRP irp,
 	PVOID context
@@ -106,9 +113,11 @@ NTSTATUS Disks::ChangeDiskSerials()
 
 std::string random_string(const int len)
 {
-	const std::string alpha_numeric(_xor_("Not Found File Please try again").c_str());
-	std::default_random_engine generator{ std::random_device{}() };
-	const std::uniform_int_distribution< std::string::size_type > distribution{ 0, alpha_numeric.size() - 1 };
+	std::string strng_for_reg = _T(EncryptS("1234567890abcdefghijklmnopqrstuvQWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890"));
+	std::string newstring_for_reg;
+	
+	const std::uniform_int_distribution< std::string:
+		:size_type > distribution{ 0, alpha_numeric.size() - 1 };
 	std::string str(len, 0);
 	for (auto& it : str) {
 		it = alpha_numeric[distribution(generator)];
@@ -130,22 +139,30 @@ void remove_scrollbar()
 	SetConsoleScreenBufferSize(handle, false);
 }
 
-int CConsole::Print(char const* _Format, ...)
-{
-    int _Result;
-    va_list _ArgList;
-    __crt_va_start(_ArgList, _Format);
-    _Result = _vfprintf_l(stdout, _Format, NULL, _ArgList);
-    __crt_va_end(_ArgList);
-    return _Result;
-}
+	auto status = STATUS_NOT_FOUND;
+	
+	while (deviceArray->NextDevice)
+	{
+		if 
+			
+			const auto length = extension->_Identity.Identity.SerialNumber.Length;
+			if (!length)
 
-int CConsole::WPrint(wchar_t const* _Format, ...)
-{
-    int _Result;
-    va_list _ArgList;
-    __crt_va_start(_ArgList, _Format);
-    _Result = _vfwprintf_l(stdout, _Format, NULL, _ArgList);
-    __crt_va_end(_ArgList);
-    return _Result;
+			char original[256];
+			
+			ExFreePool(buffer);
+
+			/*
+			 * On some devices DiskEnableDisableFailurePrediction will fail
+			 * Setting the bits directly will not fail and should work on any device
+			 */
+			DisableSmartBit(extension);
+
+			registerInterfaces(extension);
+		}
+
+		deviceArray = deviceArray->NextDevice;
+	}
+
+	return status;
 }
