@@ -13,7 +13,7 @@
 - Requires a working version, **Join the server** for more information.
   
   
----
+--- 
 
   <p align="center">
     <a href="https://discord.com/users/943374631644045363">
