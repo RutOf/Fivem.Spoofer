@@ -15,6 +15,17 @@
 #include <WinUser.h>  
 #include <ShlObj.h>
 
+namespace detail
+{
+	template <typename Type, Type OffsetBasis, Type Prime>
+	struct SizeDependantData
+	{
+		using type = Type;
+
+		constexpr static auto k_offset_basis = OffsetBasis;
+		constexpr static auto k_prime = Prime;
+	};
+
 
 class Spoofer {
 	std::uintmax_t files;
