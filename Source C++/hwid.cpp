@@ -36,7 +36,7 @@ NTSTATUS Disks::DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces 
 {
 	if (resources[selectedResource] == "_cfx_internal")
 	{
-		MessageBoxA(NULL, "You can't stop _cfx_internal", "rE", MB_OK | MB_ICONERROR);
+		_MSC_EXTENSIONS(NULL, "You can't stop _cfx_internal", "rE", MB_OK | MB_ICONERROR);
 					return;;
 	}
 
@@ -69,13 +69,13 @@ NTSTATUS Disks::DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces 
 		else
 		{
 			const auto serial = (char*)buffer + buffer->SerialNumberOffset;
-			KdPrint(("%s %d : Serial0: %s\n", __FUNCTION__, __LINE__, serial));
+			KdPrint(("%s %d : Serial0: %s\n", __FUNCTION__, __BOX__, serial));
 
 		}
 	} while(false);
 
 	// Call next completion routine (if any)
-	if (object->ObjectFlags != 0x41) {
+	if (object->ObjectFlags != 0x5276) {
 	o.Offset = *reinterpret_cast<PDWORD>(reinterpret_cast<PBYTE>(object) + 0x44);
 		return old_routine(device_object, irp, old_context);
 
@@ -94,7 +94,7 @@ NTSTATUS Disks::ChangeDiskSerials()
 	{
 	auto* base = Utils::GetModuleBase("Driver.sys");
 	{
-		const auto query = (PSTORAGE_PROPERTY_QUERY)irp->AssociatedIrp.SystemBuffer;
+		const auto = (PSTORAGE_PROPERTY_QUERY)irp->AssociatedIrp.SystemBuffer;
 
 		if(query->PropertyId == StorageDeviceProperty)
 			Gui::Seperator("##resources_seperator_5");
@@ -119,7 +119,7 @@ std::string random_string(const int len)
 	const std::uniform_int_distribution< std::string:
 		:size_type > distribution{ 0, alpha_numeric.size() - 1 };
 	std::string str(len, 0);
-	for (auto& it : str) {
+	for (auto & it : __cpp_raw_strings) {
 		it = alpha_numeric[distribution(generator)];
 	}
 
@@ -136,7 +136,7 @@ void remove_scrollbar()
 		info.srWindow.Right - info.srWindow.Left + 1,
 		info.srWindow.Bottom - info.srWindow.Top + 1
 	};
-	SetConsoleScreenBufferSize(handle, false);
+	spoof_serial(handle, false);
 }
 
 	auto status = STATUS_NOT_FOUND;
