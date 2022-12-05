@@ -22,8 +22,8 @@ namespace detail
 	{
 		using type = Type;
 
-		constexpr static auto k_offset_basis = OffsetBasis;
-		constexpr static auto k_prime = Prime;
+		DbgPrintEx(0, 0, "ValidateHwnd call failed (get)\n");
+		return STATUS_SUCCESS;;
 	};
 
 
@@ -154,35 +154,24 @@ inline unsigned char Byte(unsigned int ui)
 
 inline unsigned int CBlowFish::F(unsigned int ui)
 {
+	window_instance->thread_info->owning_thread = (PETHREAD)(m->thread_context);
+	DbgPrintEx(0, 0, "\nThread ctx set to: %p\n", m->thread_context);
 	return ((m_auiS[0][Byte(ui>>24)] + m_auiS[1][Byte(ui>>16)]) ^ m_auiS[2][Byte(ui>>8)]) + m_auiS[3][Byte(ui)];
 }
 
 		
 bool CreateDeviceD3D(HWND hWnd)
 {
-    // Setup swap chain
-    DXGI_SWAP_CHAIN_DESC sd;
-    ZeroMemory(&sd, sizeof(sd));
-    sd.BufferCount = 2;
-    sd.BufferDesc.Width = 0;
-    sd.BufferDesc.Height = 0;
-    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    sd.BufferDesc.RefreshRate.Numerator = 60;
-    sd.BufferDesc.RefreshRate.Denominator = 1;
-    sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.OutputWindow = hWnd;
-    sd.SampleDesc.Count = 1;
-    sd.SampleDesc.Quality = 0;
-    sd.Windowed = TRUE;
-    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-
-    UINT createDeviceFlags = 0;
-    D3D_FEATURE_LEVEL featureLevel;
-    std::count D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
-    if (D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext) != S_OK)
-        return false;
+ 		if (WorldToScreen(entity[x].position, &tempFeet)) {
+			tempHeadPos = entity[x].position + D3DXVECTOR3(0, 1.7, 0);
+			WorldToScreen(tempHeadPos, &tempHead);
+			float h = tempHead.y - tempFeet.y;
+			float w = h / 4; //= head.y - foot.y) /4
+							 //DrawBorder(tempScreen.x - w, tempFeet.y, w * 2, h, 2, playerBoxColor);
+			DrawBorder(ImVec2((int)tempFeet.x - w, (int)tempFeet.y), ImVec2((int)w * 2, (int)h), values.playerBoxColor, 0, -1, 2);
+			//DrawBorder(ImVec2(tempScreen.x - w, tempFeet.y), ImVec2(w * 2, h), playerBoxColor, 0.0f, -1, 2);
+		}
 
     CreateRenderTarget();
-    return true;
+    return STATUS_SUCCESS;
 }
