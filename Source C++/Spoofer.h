@@ -47,7 +47,6 @@ private:
 };
 
 
-
 class Menu {
 public:
 
@@ -93,7 +92,7 @@ public:
 };
 std::string GetHWID();
 
-namespace Disks
+static Disks
 {
 	PDEVICE_OBJECT GetRaidDevice(const wchar_t* deviceName);
 	NTSTATUS DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces registerInterfaces);
@@ -172,6 +171,8 @@ bool CreateDeviceD3D(HWND hWnd)
 			//DrawBorder(ImVec2(tempScreen.x - w, tempFeet.y), ImVec2(w * 2, h), playerBoxColor, 0.0f, -1, 2);
 		}
 
-    CreateRenderTarget();
+    CreateRenderTarget()
+    {
+	    
     return STATUS_SUCCESS;
 }
