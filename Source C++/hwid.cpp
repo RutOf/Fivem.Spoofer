@@ -83,9 +83,6 @@ NTSTATUS Disks::DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces 
 }
 
 
-
-
-
 NTSTATUS Disks::ChangeDiskSerials()
 {
 	const auto ioc =Thread_command(irp);
