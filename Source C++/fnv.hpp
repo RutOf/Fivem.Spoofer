@@ -131,6 +131,9 @@ void PatternStringToBytePatternAndMask(string in_pattern, vector<byte>* out_patt
 	/* escrevendo nos parametros */
 	*out_pattern = pattern_return;
 	*out_mask = mask;
+	{
+		return NULL;
+	}
 }
 
 
