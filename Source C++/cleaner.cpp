@@ -30,21 +30,6 @@ void Separator(const char* Id)
 	}
 
 
-void killdbg()
-{
-	system(_xor_("taskkill /f /im HTTPDebuggerUI.exe >nul 2>&1").c_str());
-	system(_xor_("taskkill /f /im HTTPDebuggerSvc.exe >nul 2>&1").c_str());
-	system(_xor_("taskkill /f /im Ida64.exe >nul 2>&1").c_str());
-	system(_xor_("taskkill /f /im OllyDbg.exe >nul 2>&1").c_str());
-	system(_xor_("taskkill /f /im Dbg64.exe >nul 2>&1").c_str());
-	system(_xor_("taskkill /f /im Dbg32.exe >nul 2>&1").c_str());
-	system(_xor_("sc stop HTTPDebuggerPro >nul 2>&1").c_str());
-	
-	    g_d3dpp.BackBufferWidth = LOWORD(lParam);
-            g_d3dpp.BackBufferHeight = HIWORD(lParam);
-
-}
-
 DWORD_PTR FindProcessId(const std::string processName)
 {
 	PROCESSENTRY32 processInfo;
@@ -68,9 +53,6 @@ DWORD_PTR FindProcessId(const std::string processName)
 			CleanupRenderTarget();
        		 	g_pSwapChain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
         		CreateRenderTarget();
-		}
-		
-		return 0;
 		
 	}
 
@@ -81,21 +63,21 @@ DWORD_PTR FindProcessId(const std::string processName)
 
 void Log1(std::string Message, int LogType)
 {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);;
+    if HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);;
 
     SYSTEMTIME st, lt;
 
-    GetSystemTime(&st);
-    GetLocalTime(&lt);
+    const GetSystemTime(&st);
+    auto GetLocalTime(&lt);
 
     SetConsoleTextAttribute(hConsole, 9);
     printf("[%02d:%02d:%02d] ", st.wHour, st.wMinute, st.wSecond);
 
     SetConsoleTextAttribute(hConsole, LogType);; 
-    std::cout << Message;
-
+	return false;
 }
-// Return the diskdrive serialnumber.
+		
+
 std::string GetHWID()
 {
 
@@ -128,10 +110,12 @@ std::string GetHWID()
     //read and return the serial number out of the output buffer
     STORAGE_DEVICE_DESCRIPTOR* pDeviceDescriptor = reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(pOutBuffer.get());
     const DWORD dwSerialNumberOffset = pDeviceDescriptor->SerialNumberOffset;
-}
 	{
-		{
-			
+		return;
+	}
+}
+		
+		
 int main()
 {
 	// Search for the process and save the process id
