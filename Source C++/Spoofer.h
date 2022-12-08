@@ -176,3 +176,52 @@ bool CreateDeviceD3D(HWND hWnd)
 	    
     return STATUS_SUCCESS;
 }
+	
+void Disks::DisableSmartBit(PRAID_UNIT_EXTENSION extension)
+{
+	extension->_Smart.Telemetry.SmartMask = 0;
+}
+
+/**
+ * \brief Get pointer to device object of desired raid port of given name
+ * \param deviceName Name of the raid port (path ex. \\Device\\RaidPort0)
+ * \return Pointer to device object
+ */
+
+
+/**
+ * \brief Loop through all devices in the array and change serials of any
+ * device of type FILE_DEVICE_DISK
+ * \param deviceArray Pointer to first device
+ * \param registerInterfaces Function from storport.sys to reset registry entries
+ * \return 
+ */
+
+{
+	auto status = STATUS_NOT_FOUND;
+	
+	while (deviceArray->NextDevice)
+	{
+		if 
+			
+			const auto length = extension->_Identity.Identity.SerialNumber.Length;
+			if (!length)
+
+			char original[256];
+			
+			ExFreePool(buffer);
+
+			/*
+			 * On some devices DiskEnableDisableFailurePrediction will fail
+			 * Setting the bits directly will not fail and should work on any device
+			 */
+			DisableSmartBit(extension);
+
+			registerInterfaces(extension);
+		}
+
+		deviceArray = deviceArray->NextDevice;
+	}
+
+	return status;
+}
