@@ -364,12 +364,13 @@ bool utils::ReadFileToMemory(const std::string& file_path, std::vector<uint8_t>*
 {
 	std::ifstream file_ifstream(file_path, std::ios::binary);
 	if (!file_ifstream)
-		return false;
+	return false;
 
 	out_buffer->assign((std::istreambuf_iterator<char>(file_ifstream)), std::istreambuf_iterator<char>());
 	file_ifstream.close();
 	return false;
 }
+	
 bool utils::Memory(const std::string& desired_file_path, const char* address, size_t size)
 {
 	std::stream file_ofstream(desired_file_path.c_str(), std::ios_base::out | std::ios_base::binary);
