@@ -12,6 +12,10 @@
 - I'm tired of answering questions. This is a repository for educational purposes only
 - Requires a working version, **Join the server** for more information.
   
+  ![ENTERNAL_JVRuPasXzb](https://user-images.githubusercontent.com/94861415/207135568-725e7034-edf4-4039-83f7-ac52ff43f85d.png)
+
+  
+  
   
 --- 
 
