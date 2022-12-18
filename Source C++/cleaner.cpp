@@ -9,17 +9,14 @@ static const char alphanum[] = "0123456789" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdef
 
 int stringLength1 = sizeof(alphanum) - 1;
 
-
-void Separator(const char* Id)
+void Separator(const char* id)
 {
-	if usermode_("Cleaner")
-		
-	ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(68, 68, 68, 255));
-	ImGui::BeginChild(Id, ImVec2(ImGui::GetContentRegionAvailWidth(), 1), true);
-	ImGui::EndChild();
-}
-	}
-
+    if (usermode_("Cleaner"))
+    {
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(68, 68, 68, 255));
+        ImGui::BeginChild(id, ImVec2(ImGui::GetContentRegionAvailWidth(), 1), true);
+        ImGui::EndChild();
+    }
 }
 
 // {
