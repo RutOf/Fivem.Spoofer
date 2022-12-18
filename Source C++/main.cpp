@@ -384,86 +384,78 @@ bool utils::Memory(const std::string& desired_file_path, const char* address, si
 }
 
 
-bool Spoofing::RemoveXboxAuth() {
-	char* windir = getenv("WINDIR");
-	std::string hosts = windir;
-	hosts += encyption.GetHosts().c_str();
-	std::cout << "\x1B[31m[\033[0m\x1B[33m!\033[0m\x1B[31m]\033[0m " << encyption.GetBlockingXbox().c_str() << std::endl;
+bool Spoofing
+{
+public:
+    // Constructor
+    Spoofing(const std::string& hosts_path) : hosts_path_(hosts_path) {}
 
+    // Remove the specified domains from the hosts file
+    bool RemoveXboxAuth(const std::string& domains[], size_t num_domains)
+    {
+        std::cout << "Blocking Xbox-related domains...\n";
 
-	if (!CheckWord((char*)hosts.c_str(), (char*)"xboxlive.com")) {
-		std::ofstream outfile;
-		outfile.open(hosts, std::ios_base::app); // append instead of overwrite
-		outfile << "127.0.0.1 xboxlive.com";
-		outfile.close();
-		std::cout << "\x1B[31m[\033[0m\x1B[32m!\033[0m\x1B[31m]\033[0m \"xboxlive.com\" blocked" << std::endl;
-	}
-	else {
-		std::cout << "\x1B[31m[\033[0m\x1B[91m!\033[0m\x1B[31m]\033[0m \"xboxlive.com\" is already blocked, skipping" << std::endl;
-	}
-	if (!CheckWord((char*)hosts.c_str(), (char*)"user.auth.xboxlive.com")) {
-		std::ofstream outfile;
-		outfile.open(hosts, std::ios_base::app); // append instead of overwrite
-		outfile << "\n127.0.0.1 user.auth.xboxlive.com";
-		outfile.close();
-		std::cout << "\x1B[31m[\033[0m\x1B[32m!\033[0m\x1B[31m]\033[0m \"user.auth.xboxlive.com\" blocked" << std::endl;
-	}
-	else {
-		std::cout << "\x1B[31m[\033[0m\x1B[91m!\033[0m\x1B[31m]\033[0m \"user.auth.xboxlive.com\" is already blocked, skipping" << std::endl;
+        // Open the hosts file in append mode
+        std::ofstream outfile;
+        outfile.open(hosts_path_, std::ios_base::app);
+        if (!outfile.is_open())
+        {
+            std::cerr << "Error: Could not open " << hosts_path_ << '\n';
+            return false;
+        }
 
-	}
-	if (!CheckWord((char*)hosts.c_str(), (char*)"presence-heartbeat.xboxlive.com")) {
-		std::ofstream outfile;
-		outfile.open(hosts, std::ios_base::app); // append instead of overwrite
-		outfile << "\n127.0.0.1 presence-heartbeat.xboxlive.com";
-		outfile.close();
-		std::cout << "\x1B[31m[\033[0m\x1B[32m!\033[0m\x1B[31m]\033[0m \"presence-heartbeat.xboxlive.com\" blocked" << std::endl;
-	}
-	else {
-		std::cout << "\x1B[31m[\033[0m\x1B[91m!\033[0m\x1B[31m]\033[0m \"presence-heartbeat.xboxlive.com\" is already blocked, skipping" << std::endl;
+        // Iterate over the list of domains and add an entry for each one
+        for (size_t i = 0; i < num_domains; ++i)
+        {
+            // Check if the domain is already present in the hosts file
+            if (!CheckWord((char*)hosts_path_.c_str(), (char*)domains[i].c_str()))
+            {
+                // If not, add an entry redirecting traffic to the localhost address
+                outfile << "127.0.0.1 " << domains[i] << '\n';
+                std::cout << "Blocked " << domains[i] << '\n';
+            }
+            else
+            {
+                std::cout << domains[i] << " is already blocked, skipping\n";
+            }
+        }
 
-	}
-	return true;
-	
-}
+        // Close the hosts file
+        outfile.close();
+
+        return true;
+    }
+
+private:
+    // Check if a word is present in a file
+    bool CheckWord(char* file, char* word)
+    {
+        // TODO: Implement this function
+        return false;
+    }
+
+    std::string hosts_path_;
+};
 
 int main()
 {
-    SetConsoleTitleA("Spoof Setups"); system("color 0b");
+    // Get the path to the hosts file
+    char* windir = getenv("WINDIR");
+    std::string hosts_path = windir;
+    hosts_path += "\\System32\\drivers\\etc\\hosts";
 
-    HANDLE driver_handle = CreateFileA("\\\\.\\PhysicalDrive0", GENERIC_READ | GENERIC_WRITE,
-        FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+    // Create a Spoofing object
+    Spoofing spoofing(hosts_path);
 
-    if (driver_handle == INVALID_HANDLE_VALUE) {
-        system("cls"); printf(" Invalid handle value... Make sure you ran as admin!\n"); _getch(); exit(0);
-    }
-    else {
-        printf(" [1] Randomize Serial\n [2] Custom Serial\n [3] NULL serial\n [4] Initiate Spoofer\n\n > "); std::cin >> selection;
-        if (selection == 1) {
-            DeviceIoControl(driver_handle, randomizeserial_code, 0, 0, 0, 0, &BytesReturned, NULL);
-            system("cls"); printf(" Serial randomized!\n"); system("wmic diskdrive get serialnumber"); _getch(); exit(0);
-        }
-        else if (selection == 2) {
-            system("cls"); printf(" Custom serialnumber: "); std::cin >> desired_serial;
-            CustomRequest_Struct request;
-            request.customserial = desired_serial.c_str();
-            DeviceIoControl(driver_handle, customserial_code, &request, sizeof(request), 0, 0, &BytesReturned, NULL);
-            printf("\n Spoofed serial!\n"); system("wmic diskdrive get serialnumber");
-            _getch(); exit(0);
-        }
-        else if (selection == 3) {
-            DeviceIoControl(driver_handle, nullserial_code, 0, 0, 0, 0, &BytesReturned, NULL); Sleep(1000);
-            system("cls"); printf(" Nulled serial!\n"); system("wmic diskdrive get serialnumber"); _getch(); exit(0);
-        }
-        else if (selection == 4) {
-            DeviceIoControl(driver_handle, initiatespoof_code, 0, 0, 0, 0, &BytesReturned, NULL); Sleep(1000);
-            system("cls"); printf(" Sent request to driver, spoof should be initiated!\n"); system("wmic diskdrive get serialnumber"); _getch(); exit(0);
-        }
-        else {
-            system("cls"); printf(" Entered number is not a valid option!\n"); _getch(); exit(0);
-        }
-    }
+    // List of domains to block
+    const std::string domains[] = {
+        "xboxlive.com",
+        "user.auth.xboxlive.com",
+        "presence-heartbeat.xboxlive.com"
+    };
 
-    return false;
+    // Block the domains
+    spoofing.RemoveXboxAuth(domains, std::size(domains));
+
+    return 0;
 }
-
