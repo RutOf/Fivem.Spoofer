@@ -103,37 +103,30 @@ using fnv32 = ::detail::FnvHash<32>;
 using fnv64 = ::detail::FnvHash<64>;
 using fnv = ::detail::FnvHash<sizeof(void*) * 8>;
 
-#define FNV(str) (std::integral_constant<fnv::hash, fnv::hash_constexpr(str)>::value)
-#define FNV32(str) (std::integral_constant<fnv32::hash, fnv32::hash_constexpr(str)>::value)
-#define FNV64(str) (std::integral_constant<fnv64::hash, fnv64::hash_constexpr(str)>::value)
-	
-				return result;
-		}
+void PatternStringToBytePatternAndMask(const string& in_pattern, vector<byte>* out_pattern, string* out_mask) {
+    // Split the input pattern into a list of string tokens
+    vector<string> res = split(in_pattern, ' ');
 
-void PatternStringToBytePatternAndMask(string in_pattern, vector<byte>* out_pattern, string* out_mask) {
+    // Initialize the output mask and pattern
+    string mask;
+    vector<byte> pattern_return;
 
-	/* gera a mascara e transforma o pattern em int array */
+    // Iterate through the list of tokens
+    for (const string& token : res) {
+        // If the token is not "??"
+        if (token != "??") {
+            // Add an 'x' to the mask and the token's value to the pattern
+            mask += "x";
+            pattern_return.push_back((byte)StrHexToInt(token));
+        }
+        else {
+            // Add a '?' to the mask and a 0 to the pattern
+            pattern_return.push_back(0);
+            mask += "?";
+        }
+    }
 
-	vector<string> res = split(in_pattern, ' ');
-	string mask;
-	vector<byte> pattern_return;
-
-	for (unsigned int x = 0; x < res.size(); x++) {
-		if (strcmp("??", res[x].c_str())) {
-			mask += "x";
-			pattern_return.push_back((byte)StrHexToInt(res[x]));
-		}
-		else {
-			pattern_return.push_back(0);
-			mask += "?";
-		}
-	}
-	/* escrevendo nos parametros */
-	*out_pattern = pattern_return;
-	*out_mask = mask;
-	{
-		return NULL;
-	}
+    // Write the output pattern and mask
+    *out_pattern = pattern_return;
+    *out_mask = mask;
 }
-
-
