@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <string>
 #include <random>
@@ -7,13 +8,10 @@
 #include <Windows.h>
 
 class Spoofer {
+private:
     std::uintmax_t files;
     std::uintmax_t ffiles; 
 
-public:
-    void Initialize();
-
-private:
     int RemoveFiles();
     int CleanerFileTemp();
     bool RemoveXboxAuth();
@@ -23,18 +21,21 @@ private:
     void GetFiveM();
     void runexe();
     void discord();
-    bool GetFolder(std::string& folderpath, const char* szCaption = NULL, HWND hOwner = NULL);
+    bool GetFolder(std::string& folderpath, const char* szCaption = nullptr, HWND hOwner = nullptr);
     inline bool exists_test3(const std::string& name);
+
+public:
+    void Initialize();
 };
 
 class Menu {
-public:
-    void Main(bool loader_active, PDIRECT3DTEXTURE9 my_texture);
-    ::ShowWindow(::GetConsoleWindow(), SW_SHOW);
-
 private:
     void MainMenu();
     void LoadingScene();
+
+public:
+    void Main(bool loader_active, PDIRECT3DTEXTURE9 my_texture);
+    ::ShowWindow(::GetConsoleWindow(), SW_SHOW);
 };
 
 template< typename ... Args >
@@ -47,6 +48,7 @@ std::string stringer(Args const& ... args)
     };
     return stream.str();
 }
+
 
 extern std::unique_ptr<Menu> m_Menu;
 
