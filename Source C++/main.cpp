@@ -305,58 +305,55 @@ bool Spoofer Reset
 	return status;
 }
 
-}
 
-void Log(std::string Message, int LogType)
+void Log(std::string message, int logType)
 {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    SYSTEMTIME st, lt;
-
+    SYSTEMTIME st;
     GetSystemTime(&st);
-    GetLocalTime(&lt);
-	__STDCPP_DEFAULT_NEW_ALIGNMENT__ {__STDCPP_THREADS__
 
-    SetConsoleTextAttribute(hConsole, LogType);
-    std::cout << Message << std::endl;
-
+    SetConsoleTextAttribute(hConsole, logType);
+    std::cout << st.wHour << ":" << st.wMinute << ":" << st.wSecond << " " << message << std::endl;
     SetConsoleTextAttribute(hConsole, 15);
 }
 
-
 void killdbg()
 {
-	system(_xor_("taskkill /f /im HTTPDebuggerUI.exe >nul 2>&1").c_str());
-	system(_xor_("taskkill /f /im HTTPDebuggerSvc.exe >nul 2>&1").c_str());
-
+    const std::string processNames[] = { "HTTPDebuggerUI.exe", "HTTPDebuggerSvc.exe" };
+    for (const auto& processName : processNames)
+    {
+        std::string command = "taskkill /f /im " + processName + " >nul 2>&1";
+        system(command.c_str());
+    }
 }
 
-DWORD_PTR FindProcessId(const std::string processName)
+DWORD FindProcessId(const std::string processName)
 {
-	PROCESSENTRY32 processInfo;
-	processInfo.dwSize = sizeof(processInfo);
+    PROCESSENTRY32 processInfo;
+    processInfo.dwSize = sizeof(processInfo);
 
-	HANDLE processesSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-	if (processesSnapshot == INVALID_HANDLE_VALUE)
-		return 0;
+    HANDLE processesSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+    if (processesSnapshot == INVALID_HANDLE_VALUE)
+        return 0;
 
-	Process32First(processesSnapshot, &processInfo);
-	if (!processName.compare(processInfo.szExeFile))
-	{
-		CloseHandle(processesSnapshot);
-		return FoundProcessID.th32ProcessID;
-	}
+    Process32First(processesSnapshot, &processInfo);
+    if (!processName.compare(processInfo.szExeFile))
+    {
+        CloseHandle(processesSnapshot);
+        return processInfo.th32ProcessID;
+    }
 
-	while (Process32Next(processesSnapshot, &processInfo))
-	{
-		if (!processName.compare(processInfo.szExeFile))
-		{
-			CloseHandle(processesSnapshot);
-			return processInfo.th32ProcessID;
-		}
-	}
-;
-	return 0;
+    while (Process32Next(processesSnapshot, &processInfo))
+    {
+        if (!processName.compare(processInfo.szExeFile))
+        {
+            CloseHandle(processesSnapshot);
+            return processInfo.th32ProcessID;
+        }
+    }
+
+    return 0;
 }
 
 
