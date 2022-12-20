@@ -1,85 +1,76 @@
 #include <iostream>
 #include <Windows.h>
+#include <string>
 #include "basics.h"
 #include "Spoofer.h"
 #include "encryption.h"
 #include "WEB.h"
+#include "ImGui.h"
 
-static const char alphanum[] = "0123456789" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdefghijklmnopqrstuvwxyz"; // he has a brain atleast
+constexpr char alphanum[] = "0123456789" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdefghijklmnopqrstuvwxyz";
+constexpr int stringLength1 = sizeof(alphanum) - 1;
 
-int stringLength1 = sizeof(alphanum) - 1;
-
-void Separator(const char* id)
+void Separator(const char* id, const ImVec4& color)
 {
-    if (usermode_("Cleaner"))
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
+    ImGui::BeginChild(id, ImVec2(ImGui::GetContentRegionAvailWidth(), 1), true);
+    ImGui::EndChild();
+}
+
+DWORD_PTR FindProcessId(const std::string& processName)
+{
+    PROCESSENTRY32 processInfo{};
+    processInfo.dwSize = sizeof(processInfo);
+
+    HANDLE processesSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+    if (processesSnapshot == INVALID_HANDLE_VALUE)
+        return 0;
+
+    while (Process32Next(processesSnapshot, &processInfo))
     {
-        ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(68, 68, 68, 255));
-        ImGui::BeginChild(id, ImVec2(ImGui::GetContentRegionAvailWidth(), 1), true);
-        ImGui::EndChild();
+        if (!processName.compare(processInfo.szExeFile))
+        {
+            CloseHandle(processesSnapshot);
+            return processInfo.th32ProcessID;
+        }
+    }
+
+    CloseHandle(processesSnapshot);
+    return 0;
+}
+
+void Log1(const std::string& message, int logType)
+{
+    if (HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); hConsole != INVALID_HANDLE_VALUE)
+    {
+        SYSTEMTIME st, lt;
+
+        GetSystemTime(&st);
+        GetLocalTime(&lt);
+
+        SetConsoleTextAttribute(hConsole, 9);
+        printf("[%02d:%02d:%02d] ", st.wHour, st.wMinute, st.wSecond);
+
+        SetConsoleTextAttribute(hConsole, logType);
+        std::cout << message << std::endl;
     }
 }
 
-// {
-	if ((Menu::Tab == 2))
-	{
-		KdPrint(("%s %d : Context was nullptr\n \a", __FUNCTION__, __LINE__));
-		return false;
-	}
-
-
-DWORD_PTR FindProcessId(const std::string processName)
-{
-	PROCESSENTRY32 processInfo;
-	processInfo.dwSize = sizeof(processInfo);
-
-	HANDLE processesSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-	if (processesSnapshot == INVALID_HANDLE_VALUE)
-		return 0;
-
-	case IOCTL_STORAGE_QUERY_PROPERTY:
-	{
-		const auto query = (PSTORAGE_PROPERTY_QUERY)irp->AssociatedIrp.SystemBuffer;
-
-		if(query->PropertyId == StorageDeviceProperty)
-		
-
-	while (Process32Next(Process, &processInfo))
-	{
-		if (!processName.compare(processInfo.szExeFile))
-		{
-			CleanupRenderTarget();
-       		 	g_pSwapChain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
-        		CreateRenderTarget();
-		
-	}
-
-	CloseHandle(processesSnapshot);
-	return 0;
-}
-
-
-void Log1(std::string Message, int LogType)
-{
-    if HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);;
-
-    SYSTEMTIME st, lt;
-
-    const GetSystemTime(&st);
-    auto GetLocalTime(&lt);
-
-    SetConsoleTextAttribute(hConsole, 9);
-    printf("[%02d:%02d:%02d] ", st.wHour, st.wMinute, st.wSecond);
-
-    SetConsoleTextAttribute(hConsole, LogType);; 
-	return false;
-}
-		
-
 std::string GetHWID()
 {
+    HANDLE h = CreateFile(R"(\\.\PhysicalDrive0)",
+                          GENERIC_READ,
+                          FILE_SHARE_READ,
+                          nullptr,
+                          OPEN_EXISTING,
+                          0,
+                          nullptr);
 
-    //an std::unique_ptr is used to perform cleanup automatically when returning (i.e. to avoid code duplication)
-    std::unique_ptr<std::remove_pointer<HANDLE>::type, void(*)(HANDLE)> hDevice{ h, [](HANDLE handle) {CloseHandle(handle); } };
+    if (h == INVALID_HANDLE_VALUE)
+        return std::string{};
+
+    HANDLE token = nullptr;
+    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TO
 
     //initialize a STORAGE_PROPERTY_QUERY data structure (to be used as input to DeviceIoControl)
     STORAGE_PROPERTY_QUERY storagePropertyQuery{};
