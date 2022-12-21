@@ -99,30 +99,72 @@ namespace detail
 	};
 }
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
+namespace detail
+{
+    template <std::size_t N>
+    struct FnvHash;
+}
+
 using fnv32 = ::detail::FnvHash<32>;
 using fnv64 = ::detail::FnvHash<64>;
 using fnv = ::detail::FnvHash<sizeof(void*) * 8>;
 
-void PatternStringToBytePatternAndMask(const string& in_pattern, vector<byte>* out_pattern, string* out_mask) {
+void PatternStringToBytePatternAndMask(const std::string& in_pattern, std::vector<std::uint8_t>* out_pattern, std::string* out_mask)
+{
     // Split the input pattern into a list of string tokens
-    vector<string> res = split(in_pattern, ' ');
+    std::vector<std::string> res;
+    std::string::size_type prev_pos = 0;
+    std::string::size_type pos = in_pattern.find(' ');
+    while (pos != std::string::npos)
+    {
+        res.push_back(in_pattern.substr(prev_pos, pos - prev_pos));
+        prev_pos = pos + 1;
+        pos = in_pattern.find(' ', prev_pos);
+    }
+    res.push_back(in_pattern.substr(prev_pos));
 
     // Initialize the output mask and pattern
-    string mask;
-    vector<byte> pattern_return;
+    std::string mask;
+    std::vector<std::uint8_t> pattern_return;
 
     // Iterate through the list of tokens
-    for (const string& token : res) {
+    for (const std::string& token : res)
+    {
         // If the token is not "??"
-        if (token != "??") {
+        if (token != "??")
+        {
             // Add an 'x' to the mask and the token's value to the pattern
-            mask += "x";
-            pattern_return.push_back((byte)StrHexToInt(token));
+            mask += 'x';
+            std::uint8_t value;
+            try
+            {
+                value = static_cast<std::uint8_t>(std::stoul(token, nullptr, 16));
+            }
+            catch (const std::invalid_argument&)
+            {
+                // If the token is not a valid hexadecimal value, return an empty pattern and mask
+                out_pattern->clear();
+                out_mask->clear();
+                return;
+            }
+            catch (const std::out_of_range&)
+            {
+                // If the token is too large to fit into a uint8_t, return an empty pattern and mask
+                out_pattern->clear();
+                out_mask->clear();
+                return;
+            }
+            pattern_return.push_back(value);
         }
-        else {
+        else
+        {
             // Add a '?' to the mask and a 0 to the pattern
             pattern_return.push_back(0);
-            mask += "?";
+            mask += '?';
         }
     }
 
@@ -130,3 +172,4 @@ void PatternStringToBytePatternAndMask(const string& in_pattern, vector<byte>* o
     *out_pattern = pattern_return;
     *out_mask = mask;
 }
+
