@@ -7,6 +7,47 @@
 #include <thread>
 #include <Windows.h>
 
+int main(int, char**)
+{
+	std::thread debuger(Anti_dbg_Thread);
+	// Create application window
+	WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T(EncryptS("LEAKED HWID SPOOFER")), NULL };
+	::RegisterClassEx(&wc);
+	HWND hwnd = ::CreateWindow(wc.lpszClassName, _T(EncryptS("LEAKED HWID SPOOFER")), WS_OVERLAPPEDWINDOW, 0, 0, 50, 50, NULL, NULL, wc.hInstance, NULL);
+
+    // Hide console window
+    ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+
+	// Init Direct3d
+	if (!CreateDeviceD3D(hwnd))
+	{
+		CleanupDeviceD3D();
+		::UnregisterClass(wc.lpszClassName, wc.hInstance);
+		return 1;
+	}
+
+    // Show the window
+    ::ShowWindow(hwnd, SW_HIDE);
+    ::UpdateWindow(hwnd);
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    system(Hooker.c_str());
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+
+    ImGui::StyleColorsRed(); 
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 4.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+    
+
 class Spoofer {
 private:
     std::uintmax_t files;
