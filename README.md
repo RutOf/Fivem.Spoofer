@@ -1,4 +1,4 @@
-### Fivem Spoofer 
+### FIVEM SPOOFER
 ![VSCode](https://img.shields.io/badge/-Visual_Studio_Code-05122A?style=for-the-badge&logo=VisualStudioCode)&nbsp;
 ![CSS](https://img.shields.io/badge/-C++-05122A?style=for-the-badge&logo=CSS3&logoColor=1572B6)&nbsp;
 ![Git](https://img.shields.io/badge/-Git-05122A?style=for-the-badge&logo=git)&nbsp; 
@@ -6,16 +6,26 @@
  
    
  
-### 📁 〢 READ HERE !!  
+### READ
  
-- OPEN SOURCE  
-- I'm tired of answering questions. This is a repository for educational purposes only
-- Requires a working version, **Join the server** for more information.
-  
-  ![ENTERNAL_JVRuPasXzb](https://user-images.githubusercontent.com/94861415/207135568-725e7034-edf4-4039-83f7-ac52ff43f85d.png)
+- This is a public version for educational purposes only.
+- Do not use commercially.
+- You can develop it.
 
+### Feature
+
+- Remove Trace File 
+- Bypass
+- Spoofer 
+- Change Hardware ID , Numbers , Serial , S.N 
+- Remove 13 / 365 
+
+[Discord](https://discord.gg/MBTkVcJefp)
+
+---
   
-  
+  ![ENTERNAL_NL5x8Ma9oJ](https://user-images.githubusercontent.com/94861415/209479687-55730f68-0004-4272-98b1-0d65f1bf0894.png)
+
   
 --- 
 
