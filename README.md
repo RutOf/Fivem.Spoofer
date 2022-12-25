@@ -24,22 +24,20 @@
 
 ---
   
-  ![ENTERNAL_NL5x8Ma9oJ](https://user-images.githubusercontent.com/94861415/209479687-55730f68-0004-4272-98b1-0d65f1bf0894.png)
+  ![Slackes](https://user-images.githubusercontent.com/94861415/209479687-55730f68-0004-4272-98b1-0d65f1bf0894.png)
 
   
 --- 
 
   <p align="center">
-    <a href="https://discord.com/users/943374631644045363">
-        <img title="Fnoberz server discord" alt="Fnoberz's discord" src="https://discord.c99.nl/widget/theme-4/943374631644045363.png"/>
+    <a href="https://discord.gg/MBTkVcJefp">
+        <img title="Slackes server discord" alt="Slackes discord" src="https://discordapp.com/api/guilds/880135738077896764/widget.png?style=banner2"/>
     </a>
 </p> 
  
-### 💬 ・HELP & SUPPORT | [Discord](https://discord.gg/MBTkVcJefp) 
+## 💬 ・[Discord](https://discord.gg/MBTkVcJefp) 
 
-
- ### 🛒〢 `PRIVATE CHEAT`
- More Here [Information](https://github.com/Club-CC/Detail)
+ ### 🛒〢 `PRODUCT`
  
 <table>
 <tr>
@@ -49,22 +47,23 @@
 </table>
 
   
-### 🎯 〢 Product Cheat
+### 🥊 〢 Private Cheat
 
-- Lifetime + Update Free
+- Lifetime 
+- Free Updates 
+- Undetected
 - Custom Feature if you want `(Example: Aimbot + Esp + Skin Changers)`
-- Undetected and can be played on the main account.
 
+### ⚓〢 Warranty
 
-### 💯〢 Warranty Product.
-
-- Support 24 Hr + Update Free
-- IF Banned = REFUND
+- Support 24 Hr
+- Update Free
+- If banned = `REFUND`
 
 A website that I created to introduce myself from start to finish. hope you like it [Slackes.me](http://slackes.me/)
 
 ---
 
 
-<h2 align="center"> Copyright © 2021 - 2022
+<h2 align="center"> Copyright © 2022
 
