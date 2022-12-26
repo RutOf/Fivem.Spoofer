@@ -4,6 +4,9 @@
 ![Git](https://img.shields.io/badge/-Git-05122A?style=for-the-badge&logo=git)&nbsp; 
 ![GitHub](https://img.shields.io/badge/-GitHub-05122A?style=for-the-badge&logo=github)&nbsp;
  
+ ---
+ 
+ This is a paid version that works 100% so contact Discord to order. I only show an example.
    
  
 ### READ
