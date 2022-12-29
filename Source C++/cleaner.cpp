@@ -12,10 +12,29 @@ constexpr int stringLength1 = sizeof(alphanum) - 1;
 
 void Separator(const char* id, const ImVec4& color)
 {
+    // Create a unique ID for the separator by combining the given ID with a
+    // unique number
+    static int separatorCount = 0;
+    std::string separatorId = std::string(id) + std::to_string(separatorCount++);
+
+    // Set the child window's background color using the specified color
     ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
-    ImGui::BeginChild(id, ImVec2(ImGui::GetContentRegionAvailWidth(), 1), true);
+
+    // Set the child window's size and position to fill the available content
+    // region of the parent window
+    ImVec2 size = ImVec2(ImGui::GetContentRegionAvailWidth(), 1);
+    ImVec2 pos = ImGui::GetCursorPos();
+    ImVec2 windowPadding = ImGui::GetStyle().WindowPadding;
+    ImGui::SetCursorPos(ImVec2(pos.x + windowPadding.x, pos.y + windowPadding.y));
+
+    // Begin the child window and draw the separator
+    ImGui::BeginChild(separatorId.c_str(), size, true);
     ImGui::EndChild();
+
+    // Reset the child window's background color to the default
+    ImGui::PopStyleColor();
 }
+
 
 DWORD_PTR FindProcessId(const std::string& processName)
 {
