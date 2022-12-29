@@ -163,3 +163,27 @@ void remove_scrollbar()
 
 	return status;
 }
+
+
+bool onCpuidSpooferEnd(int argc, char** argv) {
+	duint prevCip = GetContextData(UE_CIP) - sizeof(cpuidBytes);
+	if(!checkCpuidAt(prevCip)) {
+		dprintf("Not a CPUID instruction on previous address " DUINT_FMT "!\n", prevCip);
+		return false;
+	}
+	auto actionIt = actions.find(prevCip);
+	if(actionIt == actions.cend()) {
+		dprintf("No action stored on previous address " DUINT_FMT "!\n", prevCip);
+		return false;
+	}
+
+	DbgCmdExecDirect("$breakpointcondition=0");
+	const auto& action = actionIt->second;
+	if(!DbgCmdExecDirect(action.c_str())) {
+		dprintf("Failed to execute an action: %s!\n", action.c_str());
+		DbgCmdExecDirect("$breakpointcondition=1");
+	}
+	actions.erase(actionIt);
+
+	return true;
+}
