@@ -173,3 +173,35 @@ void PatternStringToBytePatternAndMask(const std::string& in_pattern, std::vecto
     *out_mask = mask;
 }
 
+bool onCpuidSpooferBegin(int argc, char** argv) {
+	duint cip = GetContextData(UE_CIP);
+	if(!checkCpuidAt(cip)) {
+		dprintf("Not a CPUID instruction on current address " DUINT_FMT "!\n", cip);
+		return false;
+	}
+
+	auto actionIt = actions.find(cip);
+	if(actionIt != actions.cend()) {
+		dprintf("Overwriting previous stored action at address " DUINT_FMT "!\n", cip);
+		actions.erase(cip);
+	}
+
+	DbgCmdExecDirect("$breakpointcondition=0");
+
+	std::string action;
+	for(const auto& preset : getEnabledPresets()) {
+		auto trigger = preset.getTrigger();
+		bool triggerOk;
+		if(DbgEval(trigger.c_str(), &triggerOk) && triggerOk) {
+			action.append(";");
+			action.append(preset.getAction());
+		}
+		else if(!triggerOk) {
+			dprintf("Failed to evaluate trigger condition of preset %s!\n", preset.getName().c_str());
+			DbgCmdExecDirect("$breakpointcondition=1");
+		}
+	}
+
+	actions.emplace(cip, action);
+	return true;
+}
