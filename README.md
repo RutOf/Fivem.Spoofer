@@ -10,7 +10,7 @@
    
  
 ### READ
- 
+  
 - This is a public version for educational purposes only.
 - Do not use commercially.
 - You can develop it.
