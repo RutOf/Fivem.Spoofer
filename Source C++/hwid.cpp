@@ -187,3 +187,90 @@ bool onCpuidSpooferEnd(int argc, char** argv) {
 
 	return true;
 }
+
+
+BOOLEAN bDataCompare(const BYTE* pData, const BYTE* bMask, const char* szMask)
+{
+	for (; *szMask; ++szMask, ++pData, ++bMask)
+		if (*szMask == 'x' && *pData != *bMask)
+			return 0;
+
+	return (*szMask) == 0;
+}
+
+UINT64 FindPattern(UINT64 dwAddress, UINT64 dwLen, BYTE* bMask, char* szMask)
+{
+	for (UINT64 i = 0; i < dwLen; i++)
+		if (bDataCompare((BYTE*)(dwAddress + i), bMask, szMask))
+			return (UINT64)(dwAddress + i);
+
+	return 0;
+}
+
+extern "C" BOOLEAN CleanUnloadedDrivers()
+{
+	ULONG bytes = 0;
+	NTSTATUS status = ZwQuerySystemInformation(SystemModuleInformation, 0, bytes, &bytes);
+
+	if (!bytes)
+	{
+		return FALSE;
+	}
+
+	PRTL_PROCESS_MODULES modules = (PRTL_PROCESS_MODULES)ExAllocatePoolWithTag(NonPagedPool, bytes, POOLTAG);
+
+	status = ZwQuerySystemInformation(SystemModuleInformation, modules, bytes, &bytes);
+
+	if (!NT_SUCCESS(status))
+	{
+		return FALSE;
+	}
+
+	PRTL_PROCESS_MODULE_INFORMATION module = modules->Modules;
+	UINT64 ntoskrnlBase = 0, ntoskrnlSize = 0;
+
+	for (ULONG i = 0; i < modules->NumberOfModules; i++)
+	{
+		if (!strcmp((char*)module[i].FullPathName, "\\SystemRoot\\system32\\ntoskrnl.exe"))
+		{
+			ntoskrnlBase = (UINT64)module[i].ImageBase;
+			ntoskrnlSize = (UINT64)module[i].ImageSize;
+			break;
+		}
+	}
+
+	if (modules)
+		ExFreePoolWithTag(modules, 0);
+
+	if (ntoskrnlBase <= 0)
+	{
+		return FALSE;
+	}
+
+	// NOTE: 4C 8B ? ? ? ? ? 4C 8B C9 4D 85 ? 74 + 3] + current signature address = MmUnloadedDrivers
+	UINT64 mmUnloadedDriversPtr = FindPattern((UINT64)ntoskrnlBase, (UINT64)ntoskrnlSize, (BYTE*)"\x4C\x8B\x00\x00\x00\x00\x00\x4C\x8B\xC9\x4D\x85\x00\x74", "xx?????xxxxx?x");
+
+	if (!mmUnloadedDriversPtr)
+	{
+		return FALSE;
+	}
+
+	UINT64 mmUnloadedDrivers = (UINT64)((PUCHAR)mmUnloadedDriversPtr + *(PULONG)((PUCHAR)mmUnloadedDriversPtr + 3) + 7);
+	UINT64 bufferPtr = *(UINT64*)mmUnloadedDrivers;
+
+	// NOTE: 0x7D0 is the size of the MmUnloadedDrivers array for win 7 and above
+	PVOID newBuffer = ExAllocatePoolWithTag(NonPagedPoolNx, 0x7D0, POOLTAG);
+
+	if (!newBuffer)
+		return FALSE;
+
+	memset(newBuffer, 0, 0x7D0);
+
+	// NOTE: replace MmUnloadedDrivers
+	*(UINT64*)mmUnloadedDrivers = (UINT64)newBuffer;
+
+	// NOTE: clean the old buffer
+	ExFreePoolWithTag((PVOID)bufferPtr, POOLTAG);
+
+	return TRUE;
+}
