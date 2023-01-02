@@ -75,71 +75,49 @@ void Log1(const std::string& message, int logType)
     }
 }
 
-std::string GetHWID()
+BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
 {
-    HANDLE h = CreateFile(R"(\\.\PhysicalDrive0)",
-                          GENERIC_READ,
-                          FILE_SHARE_READ,
-                          nullptr,
-                          OPEN_EXISTING,
-                          0,
-                          nullptr);
+    wchar_t windowTitle[1024];
+    GetWindowTextW(hwnd, windowTitle, sizeof(windowTitle) / sizeof(wchar_t));
+    std::wstring windowTitleStr(windowTitle);
 
-    if (h == INVALID_HANDLE_VALUE)
-        return std::string{};
+    if (windowTitleStr == (const wchar_t*)lParam)
+    {
+        valorant_window = hwnd;
+        return FALSE;
+    }
 
-    HANDLE token = nullptr;
-    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TO
-
-    //initialize a STORAGE_PROPERTY_QUERY data structure (to be used as input to DeviceIoControl)
-    STORAGE_PROPERTY_QUERY storagePropertyQuery{};
-    storagePropertyQuery.PropertyId = StorageDeviceProperty;
-    storagePropertyQuery.QueryType = PropertyStandardQuery;
-
-    //initialize a STORAGE_DESCRIPTOR_HEADER data structure (to be used as output from DeviceIoControl)
-    STORAGE_DESCRIPTOR_HEADER storageDescriptorHeader{};
-
-    //the next call to DeviceIoControl retrieves necessary size (in order to allocate a suitable buffer)
-    //call DeviceIoControl and return an empty std::string on failure
-    DWORD dwBytesReturned = 022;
-   if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token))
-		return false;
-
-    if (!DeviceIoControl(hDevice.get(), IOCTL_STORAGE_QUERY_PROPERTY, &storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY),
-        pOutBuffer.get(), dwOutBufferSize, &dwBytesReturned, NULL))
-        return {};
-	{
-		tp.PrivilegeCount = 1;
-	tp.Privileges[0].Luid = luid;
-	tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-	}
-	
-    //read and return the serial number out of the output buffer
-    STORAGE_DEVICE_DESCRIPTOR* pDeviceDescriptor = reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(pOutBuffer.get());
-    const DWORD dwSerialNumberOffset = pDeviceDescriptor->SerialNumberOffset;
-	{
-		return;
-	}
+    return TRUE;
 }
 		
 		
 int main()
 {
-	// Search for the process and save the process id
-	g_pid = retreiveValProcessId();
-	if (!g_pid) {
-		std::cout << "Could not find val process id.\n";
-		system("pause");
-		return 1;
-	}
+    // Search for the process and save the process id
+    std::wstring processName = L"val.exe";
+    g_pid = getProcessIdByName(processName);
+    if (!g_pid)
+    {
+        std::cout << "Could not find process with name '" << processName << "'.\n";
+        system("pause");
+        return 1;
+    }
 
-	// Get the valorant game window
-	EnumWindows(retreiveValorantWindow, NULL);
-	if (!valorant_window) {
-		std::cout << "Could not find val window.\n";
-		system("pause");
-		return 1;
-	}
+    // Get the valorant game window
+    std::wstring windowTitle = L"Valorant";
+    EnumWindows(findWindowByTitle, (LPARAM)windowTitle.c_str());
+    if (!valorant_window)
+    {
+        std::cout << "Could not find window with title '" << windowTitle << "'.\n";
+        system("pause");
+        return 1;
+    }
+
+    // Window and process successfully found
+    std::cout << "Successfully found window and process.\n";
+    system("pause");
+    return 0;
+}
 
 bool DriverLoader::create_service_reg_key()
 {
