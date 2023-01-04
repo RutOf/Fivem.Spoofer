@@ -1,13 +1,27 @@
-### FIVEM SPOOFER
-![VSCode](https://img.shields.io/badge/-Visual_Studio_Code-05122A?style=for-the-badge&logo=VisualStudioCode)&nbsp;
-![CSS](https://img.shields.io/badge/-C++-05122A?style=for-the-badge&logo=CSS3&logoColor=1572B6)&nbsp;
-![Git](https://img.shields.io/badge/-Git-05122A?style=for-the-badge&logo=git)&nbsp; 
-![GitHub](https://img.shields.io/badge/-GitHub-05122A?style=for-the-badge&logo=github)&nbsp;
+<h1 align="center">
+  Fivem Spoofer (Src) 🧹
+</h1>
+
+<p align="center">
+  This is the paid version. But we publish some source.
+</p>
+
+
+
+<p align="center">
+  <img src="https://img.shields.io/github/languages/top/Slackes/Fivem-Spoofer?style=flat-square"/>
+  <img src="https://img.shields.io/github/last-commit/Slackes/Fivem-Spoofer?style=flat-square"/>
+  <img src="https://sonarcloud.io/api/project_badges/measure?project=Slackes_Fivem-Spoofer&metric=ncloc"/>
+  <img src="https://img.shields.io/github/stars/Slackes/Fivem-Spoofer?color=5ac18e&label=Stars&style=flat-square"/>
+
+</p>
+
  
  ---
  
- This is a paid version that works 100% so contact Discord to order. I only show an example.
-   
+## <a id="credits"></a> 🌱 Prices
+- This is a paid version that works 100% so contact Discord to order. I only show an example.
+- We guarantee a refund if it doesn't work.
  
 ### READ
   
@@ -23,7 +37,10 @@
 - Change Hardware ID , Numbers , Serial , S.N 
 - Remove 13 / 365 
 
-[Discord](https://discord.gg/MBTkVcJefp)
+## <a id="setup2"></a> 📞 〢 Support
+- If you have any questions or don't understand the instructions, join Discord for help.
+- [Discord](https://discord.gg/MBTkVcJefp)
+
 
 ---
   
@@ -68,5 +85,9 @@ A website that I created to introduce myself from start to finish. hope you like
 ---
 
 
-<h2 align="center"> Copyright © 2022
+  <br>
+
+<p align="center">
+  Copyright © 2021 - 2022
+<br>
 
