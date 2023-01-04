@@ -21,65 +21,29 @@ struct REQUEST_STRUCT
 	PVOID SystemBuffer;
 };
 
-NTSTATUS Disks::DiskLoop(PDEVICE_OBJECT deviceArray, RaidUnitRegisterInterfaces registerInterfaces)
-	
-		{
-		pos_reg = ((rand() % (strng_for_reg.size() + 1)));
-		newstring_for_reg += strng_for_reg.substr(pos_reg, 1);
-	}
+NLRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+        return true;
 
-
-	PDEVICE_OBJECT device_object,
-	PIRP irp,
-	PVOID context
-)
-{
-	if (resources[selectedResource] == "_cfx_internal")
-	{
-		_MSC_EXTENSIONS(NULL, "You can't stop _cfx_internal", "rE", MB_OK | MB_ICONERROR);
-					return;;
-	}
-
-	const auto request = (REQUEST_STRUCT*)context;
-	const auto buffer_length = request->OutputBufferLength;
-	const auto buffer = (PSTORAGE_DEVICE_DESCRIPTOR)request->SystemBuffer;
-	ExFreePool(context);
-
-	do
-	{
-
-		if(buffer_length < FIELD_OFFSET(STORAGE_DEVICE_DESCRIPTOR, RawDeviceProperties))
-			break;	// They just want the size
-			
-		auto* extension = static_cast<HardwareIDS>(deviceArray->DeviceExtension);
-			if (!extension)
-
-		{
-			KdPrint(("%s %d %c: Device doesn't have unique ID\n", __FUNCTION__, __LINE__));
-			remove;
-		}
-
-		if(buffer_length < FIELD_OFFSET(STORAGE_DEVICE_DESCRIPTOR, RawDeviceProperties) + buffer->RawPropertiesLength
-			|| buffer->SerialNumberOffset < FIELD_OFFSET(STORAGE_DEVICE_DESCRIPTOR, RawDeviceProperties)
-			|| buffer->SerialNumberOffset >= buffer_length
-			)
-		{
-			KdPrint(("%s %d : Malformed buffer (should never happen) size: %d\n", __FUNCTION__, __LINE__, buffer_length));
-		}
-		else
-		{
-			const auto serial = (char*)buffer + buffer->SerialNumberOffset;
-			KdPrint(("%s %d : Serial0: %s\n", __FUNCTION__, __BOX__, serial));
-
-		}
-	} while(false);
-
-	// Call next completion routine (if any)
-	if (object->ObjectFlags != 0x5276) {
-	o.Offset = *reinterpret_cast<PDWORD>(reinterpret_cast<PBYTE>(object) + 0x44);
-		return old_routine(device_object, irp, old_context);
-
-	return STATUS_SUCCESS;
+    switch (msg)
+    {
+    case WM_SIZE:
+        if (g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED)
+        {
+            g_d3dpp.BackBufferWidth = LOWORD(lParam);
+            g_d3dpp.BackBufferHeight = HIWORD(lParam);
+            ResetDevice();
+        }
+        return 0;
+    case WM_SYSCOMMAND:
+        if ((wParam & 0xfff0) == SC_KEYMENU)
+            return 0;
+        break;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    }
+    return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 
