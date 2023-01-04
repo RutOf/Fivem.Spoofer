@@ -7,18 +7,12 @@
 #include "WEB.h"
 #include "ImGui.h"
 
-constexpr char alphanum[] = "0123456789" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdefghijklmnopqrstuvwxyz";
-constexpr int stringLength1 = sizeof(alphanum) - 1;
-
 void Separator(const char* id, const ImVec4& color)
 {
     // Create a unique ID for the separator by combining the given ID with a
     // unique number
     static int separatorCount = 0;
     std::string separatorId = std::string(id) + std::to_string(separatorCount++);
-
-    // Set the child window's background color using the specified color
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
 
     // Set the child window's size and position to fill the available content
     // region of the parent window
@@ -27,13 +21,17 @@ void Separator(const char* id, const ImVec4& color)
     ImVec2 windowPadding = ImGui::GetStyle().WindowPadding;
     ImGui::SetCursorPos(ImVec2(pos.x + windowPadding.x, pos.y + windowPadding.y));
 
-    // Begin the child window and draw the separator
+    // Begin the child window and set its background color to the specified color
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
     ImGui::BeginChild(separatorId.c_str(), size, true);
-    ImGui::EndChild();
 
     // Reset the child window's background color to the default
     ImGui::PopStyleColor();
+
+    // End the child window
+    ImGui::EndChild();
 }
+
 
 
 DWORD_PTR FindProcessId(const std::string& processName)
