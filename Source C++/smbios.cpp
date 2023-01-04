@@ -44,58 +44,20 @@ void CConsole::SetColor(unsigned short color)
  */
 NTSTATUS Smbios::ProcessTable(SMBIOS_HEADER* header)
 {
-	if (!header->Length)
-		return STATUS_UNSUCCESSFUL;
+    if (header->Length == 0)
+        return STATUS_UNSUCCESSFUL;
 
-	if (header->Type == 0)
-	{
-		auto* type0 = reinterpret_cast<SMBIOS_TYPE0*>(header);
+    auto* strings = reinterpret_cast<const char*>(header) + header->Length;
+    const int numStrings = static_cast<int>(*strings);
 
-		auto* vendor = GetString(header, type0->Vendor);
-		RandomizeString(vendor);
-	}
+    for (int i = 1; i <= numStrings; ++i) {
+        auto* string = GetString(header, i);
+        RandomizeString(string);
+    }
 
-	if (header->Type == 1)
-	{
-		auto* type1 = reinterpret_cast<SMBIOS_TYPE1*>(header);
-
-		auto* manufacturer = GetString(header, type1->Manufacturer);
-		RandomizeString(manufacturer);
-
-		auto* productName = GetString(header, type1->ProductName);
-		RandomizeString(productName);
-
-		auto* serialNumber = GetString(header, type1->SerialNumber);
-		RandomizeString(serialNumber);
-	}
-
-	if (header->Type == 2)
-	{
-		auto* type2 = reinterpret_cast<SMBIOS_TYPE2*>(header);
-
-		auto* manufacturer = GetString(header, type2->Manufacturer);
-		RandomizeString(manufacturer);
-
-		auto* productName = GetString(header, type2->ProductName);
-		RandomizeString(productName);
-
-		auto* serialNumber = GetString(header, type2->SerialNumber);
-		RandomizeString(serialNumber);
-	}
-
-	if (header->Type == 3)
-	{
-		auto* type3 = reinterpret_cast<SMBIOS_TYPE3*>(header);
-
-		auto* manufacturer = GetString(header, type3->Manufacturer);
-		RandomizeString(manufacturer);
-
-		auto* serialNumber = GetString(header, type3->SerialNumber);
-		RandomizeString(serialNumber);
-	}
-	
-	return STATUS_SUCCESS;
+    return STATUS_SUCCESS;
 }
+
 
 /**
  * \brief Loop through SMBIOS tables with provided first table header
