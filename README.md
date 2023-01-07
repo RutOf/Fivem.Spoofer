@@ -1,5 +1,5 @@
 <h1 align="center">
-  SRC 🧹
+  Source 🧹
 </h1>
 
 <p align="center">
