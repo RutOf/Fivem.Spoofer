@@ -34,27 +34,33 @@ void Separator(const char* id, const ImVec4& color)
 
 
 
-DWORD_PTR FindProcessId(const std::string& processName)
+DWORD FindProcessId(const std::string& processName)
 {
     PROCESSENTRY32 processInfo{};
     processInfo.dwSize = sizeof(processInfo);
 
-    HANDLE processesSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+    HANDLE processesSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (processesSnapshot == INVALID_HANDLE_VALUE)
+    {
+        // Failed to create snapshot
         return 0;
+    }
 
+    DWORD processId = 0;
     while (Process32Next(processesSnapshot, &processInfo))
     {
         if (!processName.compare(processInfo.szExeFile))
         {
-            CloseHandle(processesSnapshot);
-            return processInfo.th32ProcessID;
+            // Found the process. Save the process ID and break out of the loop
+            processId = processInfo.th32ProcessID;
+            break;
         }
     }
 
     CloseHandle(processesSnapshot);
-    return 0;
+    return processId;
 }
+
 
 void Log1(const std::string& message, int logType)
 {
