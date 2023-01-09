@@ -67,26 +67,32 @@ NTSTATUS Smbios::ProcessTable(SMBIOS_HEADER* header)
  */
 NTSTATUS Smbios::LoopTables(void* mapped, ULONG size)
 {
-	auto* endAddress = static_cast<char*>(mapped) + size;
-	while (true)
-	{
-		 	   _getch();
-  			  std::cout << std::endl;
-		if (header->Type == 127 && header->Length == 4)
-			break;
-		
-		ProcessTable(header);
-		auto* end = static_cast<char*>(mapped) + header->Length;
-		while (0 != (*end | *(end + 1))) end++;
-		end += 2;
-		if (end >= endAddress)
-			break;	
+  // Cast mapped to a pointer to SMBIOS_STRUCTURE_HEADER
+  auto* header = static_cast<SMBIOS_STRUCTURE_HEADER*>(mapped);
 
-		mapped = end;
-	}
-	
-	return STATUS_SUCCESS;
+  // Calculate the end address of the mapped region
+  auto* endAddress = static_cast<char*>(mapped) + size;
+
+  // Loop until we reach the end of the mapping region
+  while (header < endAddress)
+  {
+    // Break if we find an end-of-table marker
+    if (header->Type == 127 && header->Length == 4)
+      break;
+
+    // Process the current table
+    ProcessTable(header);
+
+    // Advance to the next table
+    auto* end = static_cast<char*>(header) + header->Length;
+    while (0 != (*end | *(end + 1))) end++;
+    end += 2;
+    header = static_cast<SMBIOS_STRUCTURE_HEADER*>(end);
+  }
+
+  return STATUS_SUCCESS;
 }
+
 
 /**
  * \brief Find SMBIOS physical address, map it and then loop through
