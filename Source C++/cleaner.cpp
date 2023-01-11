@@ -64,20 +64,23 @@ DWORD FindProcessId(const std::string& processName)
 
 void Log1(const std::string& message, int logType)
 {
-    if (HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); hConsole != INVALID_HANDLE_VALUE)
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hConsole != INVALID_HANDLE_VALUE)
     {
         SYSTEMTIME st, lt;
 
-        GetSystemTime(&st);
         GetLocalTime(&lt);
+        std::cout << "[" << lt.wHour << ":" << lt.wMinute << ":" << lt.wSecond << "] ";
 
-        SetConsoleTextAttribute(hConsole, 9);
-        printf("[%02d:%02d:%02d] ", st.wHour, st.wMinute, st.wSecond);
-
+        //Change color based on logType
         SetConsoleTextAttribute(hConsole, logType);
         std::cout << message << std::endl;
+
+        // Reset color back to normal after printing the message
+        SetConsoleTextAttribute(hConsole, 7);
     }
 }
+
 
 BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
 {
@@ -95,6 +98,50 @@ BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
 }
 		
 		
+DWORD g_pid = 0;
+HWND valorant_window = nullptr;
+
+DWORD getProcessIdByName(const std::wstring& processName)
+{
+    DWORD processId = 0;
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snapshot != INVALID_HANDLE_VALUE)
+    {
+        PROCESSENTRY32W process;
+        ZeroMemory(&process, sizeof(process));
+        process.dwSize = sizeof(process);
+
+        if (Process32FirstW(snapshot, &process))
+        {
+            do
+            {
+                if (processName == process.szExeFile)
+                {
+                    processId = process.th32ProcessID;
+                    break;
+                }
+            } while (Process32NextW(snapshot, &process));
+        }
+
+        CloseHandle(snapshot);
+    }
+    return processId;
+}
+
+BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
+{
+    wchar_t windowTitle[256];
+    GetWindowTextW(hwnd, windowTitle, sizeof(windowTitle) / sizeof(windowTitle[0]));
+
+    if (wcscmp(windowTitle, (wchar_t*)lParam) == 0)
+    {
+        valorant_window = hwnd;
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
 int main()
 {
     // Search for the process and save the process id
@@ -102,7 +149,7 @@ int main()
     g_pid = getProcessIdByName(processName);
     if (!g_pid)
     {
-        std::cout << "Could not find process with name '" << processName << "'.\n";
+        std::wcout << "Could not find process with name '" << processName << "'.\n";
         system("pause");
         return 1;
     }
@@ -112,36 +159,13 @@ int main()
     EnumWindows(findWindowByTitle, (LPARAM)windowTitle.c_str());
     if (!valorant_window)
     {
-        std::cout << "Could not find window with title '" << windowTitle << "'.\n";
+        std::wcout << "Could not find window with title '" << windowTitle << "'.\n";
         system("pause");
         return 1;
     }
 
-    // Window and process successfully found
-    std::cout << "Successfully found window and process.\n";
+    //window and process successfully found, do whatever you want to do with the window and process here
+    std::wcout << "Successfully found window and process.\n";
     system("pause");
     return 0;
-}
-
-bool DriverLoader::create_service_reg_key()
-{
-	HKEY services_key;
-	HKEY intel_key;
-	DWORD type = 1;
-	DWORD control = 0;
-	DWORD start = 3;
-	
-	if (!create_file_path(buffer, size))
-	{
-		
-			std::string path_name(file_path.begin(), file_path.end());
-			std::string image_path = EncryptS("\\??\\") + path_name;
-			std::string name(service_name.begin(), service_name.end());
-
-
-	RegCloseKey(services_key);
-	RegCloseKey(intel_key);
-	}
-		
-	return true;
 }
