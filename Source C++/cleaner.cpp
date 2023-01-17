@@ -23,14 +23,16 @@ void Separator(const char* id, const ImVec4& color)
 
     // Begin the child window and set its background color to the specified color
     ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
-    ImGui::BeginChild(separatorId.c_str(), size, true);
+    ImGui::BeginChild(separatorId.c_str(), size, false);
 
-    // Reset the child window's background color to the default
-    ImGui::PopStyleColor();
+    // Draw horizontal line 
+    ImGui::Separator();
 
     // End the child window
     ImGui::EndChild();
+    ImGui::PopStyleColor();
 }
+
 
 
 
