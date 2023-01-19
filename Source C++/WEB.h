@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <Wininet.h>
+#include <vector>
 
 #pragma comment(lib, "urlmon.lib")
 #pragma comment(lib, "wininet.lib")
@@ -14,6 +15,6 @@ public:
     ~WEB() = default;
 
     std::string downloadString(const std::string& url);
-    void checkVersion(const std::string& version);
-    int fixed();
+    bool checkVersion(const std::string& version);
+    std::vector<std::string> downloadStrings(const std::vector<std::string>& urls);
 };
