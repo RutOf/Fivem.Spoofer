@@ -33,20 +33,23 @@ LPDIRECT3DDEVICE9        g_pd3dDevice;
 D3DPRESENT_PARAMETERS    g_d3dpp;
 LPDIRECT3D9              g_pD3D;
 
-bool LoadTextureFromFile(const char* filename, PDIRECT3DTEXTURE9* out_texture, int* out_width, int* out_height)
+bool LoadTextureFromFile(const char* filename, IDirect3DTexture9** out_texture, int* out_width, int* out_height)
 {
-    PDIRECT3DTEXTURE9 texture;
+    IDirect3DTexture9* texture = nullptr;
     HRESULT hr = D3DXCreateTextureFromFileA(g_pd3dDevice, filename, &texture);
-    if (hr != S_OK)
+    if (FAILED(hr))
+    {
         return false;
+    }
 
-    D3DSURFACE_DESC my_image_desc;
-    texture->GetLevelDesc(0, &my_image_desc);
+    D3DSURFACE_DESC desc;
+    texture->GetLevelDesc(0, &desc);
     *out_texture = texture;
-    *out_width = (int)my_image_desc.Width;
-    *out_height = (int)my_image_desc.Height;
+    *out_width = static_cast<int>(desc.Width);
+    *out_height = static_cast<int>(desc.Height);
     return true;
 }
+
 
 inline bool FileExists(const std::string& name) {
     struct stat buffer;
@@ -71,22 +74,40 @@ void Theme() {
 
 bool CreateDeviceD3D(HWND hWnd)
 {
-    if ((g_pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == NULL)
+    // Create the D3D object
+    g_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+    if (!g_pD3D)
+    {
+        OutputDebugStringA("Error: Failed to create Direct3D object");
         return false;
+    }
 
-    // Create the D3DDevice
+    // Set up the present parameters
     ZeroMemory(&g_d3dpp, sizeof(g_d3dpp));
     g_d3dpp.Windowed = TRUE;
     g_d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
     g_d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;
     g_d3dpp.EnableAutoDepthStencil = TRUE;
-    g_d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
-    g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;           // Present with vsync
-    //g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;   // Present without vsync, maximum unthrottled framerate
-    if (g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pd3dDevice) < 0)
+    g_d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
+    g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+
+    // Check if the device supports vsync
+    if (g_pD3D->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, D3DFMT_X8R8G8B8, TRUE) != D3D_OK)
+    {
+        OutputDebugStringA("Warning: Device does not support vsync, disabling...");
+        g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+    }
+
+    // Create the device
+    if (g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pd3dDevice) != D3D_OK)
+    {
+        OutputDebugStringA("Error: Failed to create Direct3D device");
         return false;
+    }
+
     return true;
 }
+
 
 void CleanupDeviceD3D()
 {
