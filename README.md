@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  This is the paid version. But we publish some source.
+  This is the paid version. But we publish some sources.
 </p>
 
 
@@ -34,12 +34,12 @@
 - Remove Trace File 
 - Bypass
 - Spoofer 
-- Change Hardware ID , Numbers , Serial , S.N 
+- Change Hardware ID, Numbers, Serial, S.N 
 - Remove 13 / 365 
 
 ## <a id="setup2"></a> 🗒 〢 Product
 - If the free version does not work You can pay to buy a personal project.
-- Safe  on main account without getting banned / no need to turn off virus scan Scroll down to the bottom to read more.
+- Safe on the main account without getting banned / no need to turn off virus scan Scroll down to the bottom to read more.
 - [Discord](https://discord.gg/MBTkVcJefp) 
 
 
