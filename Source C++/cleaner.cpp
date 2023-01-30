@@ -7,31 +7,24 @@
 #include "WEB.h"
 #include "ImGui.h"
 
-void Separator(const char* id, const ImVec4& color)
-{
-    // Create a unique ID for the separator by combining the given ID with a
-    // unique number
-    static int separatorCount = 0;
-    std::string separatorId = std::string(id) + std::to_string(separatorCount++);
+void DrawColoredSeparator(const char* id, const ImVec4& color) {
+  static int separatorCount = 0;
+  std::string separatorId = std::string(id) + std::to_string(separatorCount++);
 
-    // Set the child window's size and position to fill the available content
-    // region of the parent window
-    ImVec2 size = ImVec2(ImGui::GetContentRegionAvailWidth(), 1);
-    ImVec2 pos = ImGui::GetCursorPos();
-    ImVec2 windowPadding = ImGui::GetStyle().WindowPadding;
-    ImGui::SetCursorPos(ImVec2(pos.x + windowPadding.x, pos.y + windowPadding.y));
+  ImVec2 size = ImGui::GetContentRegionAvail();
+  ImVec2 pos = ImGui::GetCursorPos();
+  ImVec2 windowPadding = ImGui::GetStyle().WindowPadding;
+  ImGui::SetCursorPos(ImVec2(pos.x + windowPadding.x, pos.y + windowPadding.y));
 
-    // Begin the child window and set its background color to the specified color
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
-    ImGui::BeginChild(separatorId.c_str(), size, false);
+  ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
+  ImGui::BeginChild(separatorId.c_str(), ImVec2(size.x, 1), false);
 
-    // Draw horizontal line 
-    ImGui::Separator();
+  ImGui::Separator();
 
-    // End the child window
-    ImGui::EndChild();
-    ImGui::PopStyleColor();
+  ImGui::EndChild();
+  ImGui::PopStyleColor();
 }
+
 
 
 
