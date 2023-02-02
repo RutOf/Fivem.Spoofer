@@ -99,9 +99,6 @@ namespace detail
 	};
 }
 
-#include <cstdint>
-#include <string>
-#include <vector>
 
 namespace detail
 {
@@ -174,34 +171,40 @@ void PatternStringToBytePatternAndMask(const std::string& in_pattern, std::vecto
 }
 
 bool onCpuidSpooferBegin(int argc, char** argv) {
-	duint cip = GetContextData(UE_CIP);
-	if(!checkCpuidAt(cip)) {
-		dprintf("Not a CPUID instruction on current address " DUINT_FMT "!\n", cip);
-		return false;
-	}
+    duint cip = GetContextData(UE_CIP);
+    if (!checkCpuidAt(cip)) {
+        dprintf("Error: Not a CPUID instruction at address " DUINT_FMT "\n", cip);
+        return false;
+    }
 
-	auto actionIt = actions.find(cip);
-	if(actionIt != actions.cend()) {
-		dprintf("Overwriting previous stored action at address " DUINT_FMT "!\n", cip);
-		actions.erase(cip);
-	}
+    // Check if there's already an action stored for this address
+    auto actionIt = actions.find(cip);
+    if (actionIt != actions.cend()) {
+        dprintf("Warning: Overwriting previous stored action at address " DUINT_FMT "\n", cip);
+        actions.erase(cip);
+    }
 
-	DbgCmdExecDirect("$breakpointcondition=0");
+    DbgCmdExecDirect("$breakpointcondition=0");
 
-	std::string action;
-	for(const auto& preset : getEnabledPresets()) {
-		auto trigger = preset.getTrigger();
-		bool triggerOk;
-		if(DbgEval(trigger.c_str(), &triggerOk) && triggerOk) {
-			action.append(";");
-			action.append(preset.getAction());
-		}
-		else if(!triggerOk) {
-			dprintf("Failed to evaluate trigger condition of preset %s!\n", preset.getName().c_str());
-			DbgCmdExecDirect("$breakpointcondition=1");
-		}
-	}
+    // Concatenate all enabled preset actions
+    std::string action;
+    for (const auto& preset : getEnabledPresets()) {
+        auto trigger = preset.getTrigger();
+        bool triggerOk;
+        if (DbgEval(trigger.c_str(), &triggerOk) && triggerOk) {
+            if (!action.empty()) {
+                action.append(";");
+            }
+            action.append(preset.getAction());
+        }
+        else if (!triggerOk) {
+            dprintf("Error: Failed to evaluate trigger condition of preset %s\n", preset.getName().c_str());
+            DbgCmdExecDirect("$breakpointcondition=1");
+            return false;
+        }
+    }
 
-	actions.emplace(cip, action);
-	return true;
+    // Store the combined action
+    actions.emplace(cip, action);
+    return true;
 }
