@@ -11,19 +11,18 @@ void DrawColoredSeparator(const char* id, const ImVec4& color) {
   static int separatorCount = 0;
   std::string separatorId = std::string(id) + std::to_string(separatorCount++);
 
-  ImVec2 size = ImGui::GetContentRegionAvail();
-  ImVec2 pos = ImGui::GetCursorPos();
   ImVec2 windowPadding = ImGui::GetStyle().WindowPadding;
-  ImGui::SetCursorPos(ImVec2(pos.x + windowPadding.x, pos.y + windowPadding.y));
+  ImVec2 cursorPos = ImGui::GetCursorPos();
+  ImVec2 regionSize = ImGui::GetContentRegionAvail();
 
-  ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
-  ImGui::BeginChild(separatorId.c_str(), ImVec2(size.x, 1), false);
-
+  ImGui::PushStyleColor(ImGuiCol_Separator, color);
+  ImGui::SetCursorPos(ImVec2(cursorPos.x + windowPadding.x, cursorPos.y + windowPadding.y));
   ImGui::Separator();
-
-  ImGui::EndChild();
   ImGui::PopStyleColor();
+
+  ImGui::SetCursorPos(ImVec2(cursorPos.x, cursorPos.y + windowPadding.y + regionSize.y));
 }
+
 
 
 
