@@ -56,21 +56,21 @@ DWORD FindProcessId(const std::string& processName)
 }
 
 
-void Log1(const std::string& message, int logType)
+void LogMessage(const std::string& message, int logType)
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     if (hConsole != INVALID_HANDLE_VALUE)
     {
         SYSTEMTIME st, lt;
-
         GetLocalTime(&lt);
-        std::cout << "[" << lt.wHour << ":" << lt.wMinute << ":" << lt.wSecond << "] ";
 
-        //Change color based on logType
+        std::cout << "[" << std::setfill('0') << std::setw(2) << lt.wHour << ":"
+                  << std::setfill('0') << std::setw(2) << lt.wMinute << ":"
+                  << std::setfill('0') << std::setw(2) << lt.wSecond << "] ";
+
         SetConsoleTextAttribute(hConsole, logType);
         std::cout << message << std::endl;
 
-        // Reset color back to normal after printing the message
         SetConsoleTextAttribute(hConsole, 7);
     }
 }
