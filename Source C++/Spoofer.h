@@ -35,6 +35,11 @@ LPDIRECT3D9              g_pD3D;
 
 bool LoadTextureFromFile(const char* filename, IDirect3DTexture9** out_texture, int* out_width, int* out_height)
 {
+    if (!filename || !out_texture || !out_width || !out_height)
+    {
+        return false;
+    }
+
     IDirect3DTexture9* texture = nullptr;
     HRESULT hr = D3DXCreateTextureFromFileA(g_pd3dDevice, filename, &texture);
     if (FAILED(hr))
@@ -43,7 +48,13 @@ bool LoadTextureFromFile(const char* filename, IDirect3DTexture9** out_texture, 
     }
 
     D3DSURFACE_DESC desc;
-    texture->GetLevelDesc(0, &desc);
+    hr = texture->GetLevelDesc(0, &desc);
+    if (FAILED(hr))
+    {
+        texture->Release();
+        return false;
+    }
+
     *out_texture = texture;
     *out_width = static_cast<int>(desc.Width);
     *out_height = static_cast<int>(desc.Height);
