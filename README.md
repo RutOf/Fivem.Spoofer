@@ -1,5 +1,5 @@
 <h1 align="center">
-  Source 🧹
+  Source 🥊
 </h1>
 
 <p align="center">
@@ -45,7 +45,7 @@
 
 ---
   
-  ![Serups](https://user-images.githubusercontent.com/94861415/209479687-55730f68-0004-4272-98b1-0d65f1bf0894.png)
+![serups](https://user-images.githubusercontent.com/94861415/217356007-ef553de2-5781-45ed-901d-a79b872289ab.png)
 
   
 --- 
@@ -56,9 +56,9 @@
     </a>
 </p> 
  
-## 💬 ・[Discord](https://discord.gg/2euDQqzD8Y) 
+## 💬 ・[Discord Server](https://discord.gg/2euDQqzD8Y) 
 
- ### 🛒〢 `SHOP`
+ ### 🛒〢 `PRODUCT`
  
 <table>
 <tr>
@@ -75,7 +75,7 @@
 - Undetected
 - Custom Feature if you want `(Example: Aimbot + Esp + Skin Changers)`
 
-### 📌〢 Warranty
+### 🔱〢 Warranty
 
 - Support 24 Hr
 - Update Free
@@ -85,10 +85,11 @@ A website that I created to introduce myself from start to finish. hope you like
 
 ---
 
-
   <br>
 
 <p align="center">
   Copyright © 2021 - 2022
 <br>
+
+
 
