@@ -26,16 +26,9 @@ char* Smbios::GetString(SMBIOS_HEADER* header, SMBIOS_STRING string)
 void CConsole::SetColor(unsigned short color)
 {
     HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hcon, color)
-
-	auto* buffer = static_cast<char*>(ExAllocatePoolWithTag(NonPagedPool, length, POOL_TAG));
-	Utils::RandomText(buffer, length);
-	buffer[length] = '\0';
-
-	memcpy(string, buffer, length);
-
-	ExFreePool(buffer);
+    SetConsoleTextAttribute(hcon, color);
 }
+
 
 /**
  * \brief Modify information in the table of given header
