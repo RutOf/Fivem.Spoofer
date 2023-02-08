@@ -7,9 +7,9 @@
 #include "WEB.h"
 #include "ImGui.h"
 
-void DrawColoredSeparator(const char* id, const ImVec4& color) {
+void DrawColoredSeparator(const std::string& id, const ImVec4& color) {
   static int separatorCount = 0;
-  std::string separatorId = std::string(id) + std::to_string(separatorCount++);
+  std::string separatorId = id + std::to_string(separatorCount++);
 
   ImGui::PushID(separatorId.c_str());
 
@@ -23,7 +23,7 @@ void DrawColoredSeparator(const char* id, const ImVec4& color) {
   ImGui::PopStyleColor();
 
   ImGui::SetCursorPos(ImVec2(cursorPos.x, cursorPos.y + windowPadding.y + regionSize.y));
-  
+
   ImGui::PopID();
 }
 
