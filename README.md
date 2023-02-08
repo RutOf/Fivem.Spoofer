@@ -57,6 +57,7 @@
 </p> 
  
 ## 💬 ・[Discord Server](https://discord.gg/2euDQqzD8Y) 
+`CLICK BLUE BUTTON FOR JOIN SERVER.`
 
  ### 🛒〢 `PRODUCT`
  
