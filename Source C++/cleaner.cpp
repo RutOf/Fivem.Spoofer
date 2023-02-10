@@ -29,33 +29,33 @@ void DrawColoredSeparator(const std::string& id, const ImVec4& color) {
 
 
 
-DWORD FindProcessId(const std::string& processName)
+DWORD FindProcessId(const std::wstring& processName)
 {
-    PROCESSENTRY32 processInfo{};
-    processInfo.dwSize = sizeof(processInfo);
-
-    HANDLE processesSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if (processesSnapshot == INVALID_HANDLE_VALUE)
+    DWORD processId = 0;
+    HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hProcessSnap == INVALID_HANDLE_VALUE)
     {
-        // Failed to create snapshot
         return 0;
     }
 
-    DWORD processId = 0;
-    while (Process32Next(processesSnapshot, &processInfo))
+    PROCESSENTRY32 pe32;
+    pe32.dwSize = sizeof(PROCESSENTRY32);
+
+    if (Process32First(hProcessSnap, &pe32))
     {
-        if (!processName.compare(processInfo.szExeFile))
+        do
         {
-            // Found the process. Save the process ID and break out of the loop
-            processId = processInfo.th32ProcessID;
-            break;
-        }
+            if (_tcsicmp(pe32.szExeFile, processName.c_str()) == 0)
+            {
+                processId = pe32.th32ProcessID;
+                break;
+            }
+        } while (Process32Next(hProcessSnap, &pe32));
     }
 
-    CloseHandle(processesSnapshot);
+    CloseHandle(hProcessSnap);
     return processId;
 }
-
 
 void LogMessage(const std::string& message, int logType)
 {
