@@ -101,16 +101,19 @@ bool CreateDeviceD3D(HWND hWnd)
     g_d3dpp.EnableAutoDepthStencil = TRUE;
     g_d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
     g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+    g_d3dpp.BackBufferCount = 1;
 
     // Check if the device supports vsync
-    if (g_pD3D->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, D3DFMT_X8R8G8B8, TRUE) != D3D_OK)
+    HRESULT result = g_pD3D->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, D3DFMT_X8R8G8B8, TRUE);
+    if (result != D3D_OK)
     {
         OutputDebugStringA("Warning: Device does not support vsync, disabling...");
         g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
     }
 
     // Create the device
-    if (g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pd3dDevice) != D3D_OK)
+    result = g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pd3dDevice);
+    if (result != D3D_OK)
     {
         OutputDebugStringA("Error: Failed to create Direct3D device");
         return false;
