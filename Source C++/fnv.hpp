@@ -4,99 +4,62 @@
 #include <type_traits>
 
 // Implements FNV-1a hash algorithm
-namespace detail
-{
-	template <typename Type, Type OffsetBasis, Type Prime>
-	struct SizeDependantData
-	{
-		using type = Type;
+namespace detail {
+    template <unsigned Size> struct FnvHash;
+    template <> struct FnvHash<32> { using type = std::uint32_t; };
+    template <> struct FnvHash<64> { using type = std::uint64_t; };
 
-		constexpr static auto k_offset_basis = OffsetBasis;
-		constexpr static auto k_prime = Prime;
-	};
+    template <typename T, T OffsetBasis, T Prime>
+    struct SizeDependantData {
+        using type = T;
+        constexpr static auto k_offset_basis = OffsetBasis;
+        constexpr static auto k_prime = Prime;
+    };
 
-	template <std::size_t Bits>
-	struct SizeSelector : std::false_type {};
+    template <typename T> constexpr T FnvHash_init = 0;
+    template <typename T, T OffsetBasis, T Prime>
+    constexpr T FnvHash_init<SizeDependantData<T, OffsetBasis, Prime>> = OffsetBasis;
 
-	template <>
-	struct SizeSelector<32> : SizeDependantData<std::uint32_t, 0x811c9dc5ul, 16777619ul> {};
+    template <typename T, T OffsetBasis, T Prime>
+    constexpr T FnvHash_byte(T current, std::uint8_t byte) {
+        return (current ^ byte) * Prime;
+    }
 
-	template <>
-	struct SizeSelector<64> : SizeDependantData<std::uint64_t, 0xcbf29ce484222325ull, 1099511628211ull> {};
+    template <unsigned Size>
+    struct FnvHash {
+        using data_t = SizeDependantData<typename FnvHash<Size>::type,
+                                         0x811c9dc5u - 0x100u * (Size == 32),
+                                         16777619u - 0x100000000u * (Size == 32)>;
 
-	template <std::size_t Size>
-	class FnvHash
-	{
-	private:
-		using data_t = SizeSelector<Size>;
+        using hash = typename data_t::type;
+        constexpr static auto k_offset_basis = data_t::k_offset_basis;
+        constexpr static auto k_prime = data_t::k_prime;
 
-	public:
-		using hash = typename data_t::type;
+        static constexpr hash hash_init() { return FnvHash_init<data_t>; }
 
-	private:
-		constexpr static auto k_offset_basis = data_t::k_offset_basis;
-		constexpr static auto k_prime = data_t::k_prime;
+        static constexpr hash hash_byte(hash current, std::uint8_t byte) {
+            return FnvHash_byte(current, byte, k_prime);
+        }
 
-	public:
-		static __forceinline constexpr auto hash_init(
-		) -> hash
-		{
-			return k_offset_basis;
-		}
+        template <std::size_t N>
+        static constexpr hash hash_constexpr(const char (&str)[N], std::size_t size = N - 1) {
+            return size == 1 ? k_offset_basis : hash_byte(hash_constexpr(str, size - 1), str[size - 1]);
+        }
 
-		static __forceinline constexpr auto hash_byte(
-			hash current,
-			std::uint8_t byte
-		) -> hash
-		{
-			return (current ^ byte) * k_prime;
-		}
+        static hash hash_runtime_data(const void* data, std::size_t size) {
+            const auto bytes = static_cast<const std::uint8_t*>(data);
+            const auto end = bytes + size;
+            auto result = k_offset_basis;
+            for (auto it = bytes; it < end; ++it) result = hash_byte(result, *it);
+            return result;
+        }
 
-		template <std::size_t N>
-		static __forceinline constexpr auto hash_constexpr(
-			const char (&str)[N],
-			const std::size_t size = N - 1 /* do not hash the null */
-		) -> hash
-		{
-			const auto prev_hash = size == 1 ? hash_init() : hash_constexpr(str, size - 1);
-			const auto cur_hash = hash_byte(prev_hash, str[size - 1]);
-			return cur_hash;
-		}
-
-		static auto __forceinline hash_runtime_data(
-			const void* data,
-			const std::size_t sz
-		) -> hash
-		{
-			const auto bytes = static_cast<const uint8_t*>(data);
-			const auto end = bytes + sz;
-			auto result = hash_init();
-			for (auto it = bytes; it < end; ++it)
-				result = hash_byte(result, *it);
-
-			return result;
-		}
-
-		static auto __forceinline hash_runtime(
-			const char* str
-		) -> hash
-		{
-			auto result = hash_init();
-			do
-				result = hash_byte(result, *str++);
-			while (*str != '\0');
-			private:
-	int RemoveFiles();
-	bool RemoveXboxAuth();
-	bool CheckWord(char* filename, char* search);
-	void ChangeRegEdit();
-	std::string newUUID();
-	void GetFiveM();
-	void runexe();
-	bool GetFolder(std::string& folderpath, const char* szCaption = NULL, HWND hOwner = NULL);
-	inline bool exists_test3(const std::string& name);
-
-	};
+        static hash hash_runtime(const char* str) {
+            auto result = k_offset_basis;
+            while (*str != '\0') result = hash_byte(result, *str++);
+            return result;
+        }
+    };
 }
 
 
