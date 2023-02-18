@@ -79,11 +79,11 @@ void LogMessage(const std::string& message, int logType)
 
 BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
 {
-    wchar_t windowTitle[1024];
-    GetWindowTextW(hwnd, windowTitle, sizeof(windowTitle) / sizeof(wchar_t));
-    std::wstring windowTitleStr(windowTitle);
+    constexpr int buffer_size = 1024;
+    wchar_t window_title[buffer_size];
+    GetWindowTextW(hwnd, window_title, buffer_size);
 
-    if (windowTitleStr == (const wchar_t*)lParam)
+    if (lstrcmpW(window_title, reinterpret_cast<LPCWSTR>(lParam)) == 0)
     {
         valorant_window = hwnd;
         return FALSE;
@@ -91,6 +91,7 @@ BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
 
     return TRUE;
 }
+
 		
 		
 DWORD g_pid = 0;
