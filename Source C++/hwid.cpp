@@ -136,28 +136,53 @@ void remove_scrollbar()
 }
 
 
-bool onCpuidSpooferEnd(int argc, char** argv) {
-	duint prevCip = GetContextData(UE_CIP) - sizeof(cpuidBytes);
-	if(!checkCpuidAt(prevCip)) {
-		dprintf("Not a CPUID instruction on previous address " DUINT_FMT "!\n", prevCip);
-		return false;
-	}
-	auto actionIt = actions.find(prevCip);
-	if(actionIt == actions.cend()) {
-		dprintf("No action stored on previous address " DUINT_FMT "!\n", prevCip);
-		return false;
-	}
+bool onCpuidSpooferEnd(const int& argc, char** argv) {
+    const duint& prevCip = GetContextData(UE_CIP) - sizeof(cpuidBytes);
 
-	DbgCmdExecDirect("$breakpointcondition=0");
-	const auto& action = actionIt->second;
-	if(!DbgCmdExecDirect(action.c_str())) {
-		dprintf("Failed to execute an action: %s!\n", action.c_str());
-		DbgCmdExecDirect("$breakpointcondition=1");
-	}
-	actions.erase(actionIt);
+    if (!checkCpuidAt(prevCip)) {
+        dprintf("Error: previous instruction is not a CPUID instruction (address: " DUINT_FMT ")\n", prevCip);
+        return false;
+    }
 
-	return true;
+    const auto& actionIt = actions.find(prevCip);
+    if (actionIt == actions.cend()) {
+        dprintf("Error: no action stored for previous instruction (address: " DUINT_FMT ")\n", prevCip);
+        return false;
+    }
+
+    auto& action = actionIt->second;
+
+    if (!executeAction(action)) {
+        dprintf("Error: failed to execute action for previous instruction (address: " DUINT_FMT ", action: %s)\n", prevCip, action.c_str());
+        return false;
+    }
+
+    actions.erase(actionIt);
+
+    return true;
 }
+
+bool executeAction(const std::string& action) {
+    const char* action_cstr = action.c_str();
+    const size_t action_length = strlen(action_cstr);
+    
+    if (action_length < 2) {
+        // Invalid action
+        return false;
+    }
+
+    if (action_cstr[0] == '$') {
+        // Debugger command
+        const char* args_cstr = action_cstr + 1;
+        return DbgCmdExecDirect(args_cstr) != 0;
+    } else {
+        // User-defined function
+        // Replace this with the appropriate function call from x64dbg's API
+        dprintf("Warning: user-defined functions not yet supported\n");
+        return false;
+    }
+}
+
 
 
 BOOLEAN bDataCompare(const BYTE* pData, const BYTE* bMask, const char* szMask)
