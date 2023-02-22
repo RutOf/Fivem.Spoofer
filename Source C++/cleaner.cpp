@@ -138,12 +138,54 @@ BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
     return TRUE;
 }
 
+// Declare global variables
+DWORD g_pid = 0;
+HWND g_hwnd = nullptr;
+
+// Define callback function for EnumWindows
+BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
+{
+    wchar_t buffer[1024];
+    GetWindowTextW(hwnd, buffer, sizeof(buffer));
+    if (std::wstring(buffer) == std::wstring(reinterpret_cast<const wchar_t*>(lParam)))
+    {
+        g_hwnd = hwnd;
+        return FALSE;
+    }
+    return TRUE;
+}
+
+// Function to get the process ID by name
+DWORD getProcessIdByName(const std::wstring& processName)
+{
+    DWORD pid = 0;
+    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnap != INVALID_HANDLE_VALUE)
+    {
+        PROCESSENTRY32 pe;
+        pe.dwSize = sizeof(PROCESSENTRY32);
+        if (Process32First(hSnap, &pe))
+        {
+            do
+            {
+                if (std::wstring(pe.szExeFile) == processName)
+                {
+                    pid = pe.th32ProcessID;
+                    break;
+                }
+            } while (Process32Next(hSnap, &pe));
+        }
+        CloseHandle(hSnap);
+    }
+    return pid;
+}
+
 int main()
 {
     // Search for the process and save the process id
     std::wstring processName = L"val.exe";
     g_pid = getProcessIdByName(processName);
-    if (!g_pid)
+    if (g_pid == 0)
     {
         std::wcout << "Could not find process with name '" << processName << "'.\n";
         system("pause");
@@ -152,10 +194,40 @@ int main()
 
     // Get the valorant game window
     std::wstring windowTitle = L"Valorant";
-    EnumWindows(findWindowByTitle, (LPARAM)windowTitle.c_str());
-    if (!valorant_window)
+    EnumWindows(findWindowByTitle, reinterpret_cast<LPARAM>(windowTitle.c_str()));
+    if (g_hwnd == nullptr)
     {
         std::wcout << "Could not find window with title '" << windowTitle << "'.\n";
+        system("pause");
+        return 1;
+    }
+
+    // Get the process handle
+    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, g_pid);
+    if (hProcess == nullptr)
+    {
+        std::wcout << "Could not open process with ID " << g_pid << ".\n";
+        system("pause");
+        return 1;
+    }
+
+    // Get the module handle for val.exe
+    HMODULE hModule = nullptr;
+    DWORD cbNeeded = 0;
+    if (!EnumProcessModules(hProcess, &hModule, sizeof(hModule), &cbNeeded))
+    {
+        std::wcout << "Could not get module handle for process with ID " << g_pid << ".\n";
+        CloseHandle(hProcess);
+        system("pause");
+        return 1;
+    }
+
+    // Get the base address of the module
+    LPVOID baseAddress = nullptr;
+    if (!GetModuleInformation(hProcess, hModule, nullptr, 0, reinterpret_cast<LPDWORD>(&baseAddress)))
+    {
+        std::wcout << "Could not get module information for process with ID " << g_pid << ".\n";
+        CloseHandle(hProcess);
         system("pause");
         return 1;
     }
