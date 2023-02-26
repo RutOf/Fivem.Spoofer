@@ -182,58 +182,41 @@ DWORD getProcessIdByName(const std::wstring& processName)
 
 int main()
 {
-    // Search for the process and save the process id
     std::wstring processName = L"val.exe";
     g_pid = getProcessIdByName(processName);
     if (g_pid == 0)
     {
-        std::wcout << "Could not find process with name '" << processName << "'.\n";
-        system("pause");
         return 1;
     }
 
-    // Get the valorant game window
     std::wstring windowTitle = L"Valorant";
     EnumWindows(findWindowByTitle, reinterpret_cast<LPARAM>(windowTitle.c_str()));
     if (g_hwnd == nullptr)
     {
-        std::wcout << "Could not find window with title '" << windowTitle << "'.\n";
-        system("pause");
         return 1;
     }
 
-    // Get the process handle
     HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, g_pid);
     if (hProcess == nullptr)
     {
-        std::wcout << "Could not open process with ID " << g_pid << ".\n";
-        system("pause");
         return 1;
     }
 
-    // Get the module handle for val.exe
     HMODULE hModule = nullptr;
     DWORD cbNeeded = 0;
     if (!EnumProcessModules(hProcess, &hModule, sizeof(hModule), &cbNeeded))
     {
-        std::wcout << "Could not get module handle for process with ID " << g_pid << ".\n";
         CloseHandle(hProcess);
-        system("pause");
         return 1;
     }
 
-    // Get the base address of the module
     LPVOID baseAddress = nullptr;
     if (!GetModuleInformation(hProcess, hModule, nullptr, 0, reinterpret_cast<LPDWORD>(&baseAddress)))
     {
-        std::wcout << "Could not get module information for process with ID " << g_pid << ".\n";
         CloseHandle(hProcess);
-        system("pause");
         return 1;
     }
 
-    //window and process successfully found, do whatever you want to do with the window and process here
-    std::wcout << "Successfully found window and process.\n";
-    system("pause");
     return 0;
 }
+
