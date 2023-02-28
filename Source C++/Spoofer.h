@@ -70,16 +70,37 @@ inline bool FileExists(const std::string& name) {
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-void Theme() {
+// Set the colors and rounding values for the ImGui GUI
+void SetImGuiStyle() {
+
+    // Get the ImGui style settings
     ImGuiStyle& style = ImGui::GetStyle();
+
+    // Set the window background color
     style.Colors[ImGuiCol_WindowBg] = ImVec4(COLOUR(22.0f), COLOUR(24.0f), COLOUR(29.0f), 1.f);
+
+    // Set the title bar background color when the window is active
     style.Colors[ImGuiCol_TitleBgActive] = ImVec4(COLOUR(30.0f), COLOUR(31.0f), COLOUR(38.0f), 1.f);
+
+    // Set the border color for windows and panels
     style.Colors[ImGuiCol_Border] = ImVec4(COLOUR(22.0f), COLOUR(24.0f), COLOUR(29.0f), 0.9f);
+
+    // Set the background color for panels, combo boxes, and menus
     style.Colors[ImGuiCol_FrameBg] = ImVec4(COLOUR(50.0f), COLOUR(50.0f), COLOUR(50.0f), 1.f);
+
+    // Set the color for buttons
     style.Colors[ImGuiCol_Button] = ImVec4(COLOUR(67.0f), COLOUR(38.0f), COLOUR(235.0f), 1.f);
+
+    // Set the active color for headers
     style.Colors[ImGuiCol_HeaderActive] = ImVec4(COLOUR(5.0f), COLOUR(116.0f), COLOUR(203.0f), 1.f);
+
+    // Set the color for headers
     style.Colors[ImGuiCol_Header] = ImVec4(COLOUR(5.0f), COLOUR(116.0f), COLOUR(203.0f), 1.f);
+
+    // Set the rounding value for windows
     style.WindowRounding = 0.0f;
+
+    // Set the rounding value for panels and frames
     style.FrameRounding = 2.f;
 }
 
