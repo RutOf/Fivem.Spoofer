@@ -180,25 +180,72 @@ DWORD getProcessIdByName(const std::wstring& processName)
     return pid;
 }
 
+// Function to find the process ID given its name
+DWORD getProcessIdByName(const std::wstring& processName)
+{
+    DWORD processId = 0;
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snapshot != INVALID_HANDLE_VALUE)
+    {
+        PROCESSENTRY32 processEntry;
+        processEntry.dwSize = sizeof(PROCESSENTRY32);
+        if (Process32First(snapshot, &processEntry))
+        {
+            do
+            {
+                if (_wcsicmp(processEntry.szExeFile, processName.c_str()) == 0)
+                {
+                    processId = processEntry.th32ProcessID;
+                    break;
+                }
+            } while (Process32Next(snapshot, &processEntry));
+        }
+        CloseHandle(snapshot);
+    }
+    return processId;
+}
+
+// Callback function to find a window handle by its title
+BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
+{
+    wchar_t buffer[1024];
+    if (GetWindowText(hwnd, buffer, sizeof(buffer)) > 0)
+    {
+        if (std::wstring(buffer) == reinterpret_cast<const wchar_t*>(lParam))
+        {
+            g_hwnd = hwnd;
+            return FALSE;  // Stop enumeration
+        }
+    }
+    return TRUE;
+}
+
 int main()
 {
     std::wstring processName = L"val.exe";
-    g_pid = getProcessIdByName(processName);
-    if (g_pid == 0)
+    DWORD processId = getProcessIdByName(processName);
+    if (processId == 0)
     {
+        std::cerr << "Error: could not find process \"" << processName << "\"" << std::endl;
         return 1;
     }
 
     std::wstring windowTitle = L"Valorant";
-    EnumWindows(findWindowByTitle, reinterpret_cast<LPARAM>(windowTitle.c_str()));
+    if (!EnumWindows(findWindowByTitle, reinterpret_cast<LPARAM>(windowTitle.c_str())))
+    {
+        std::cerr << "Error: could not enumerate windows" << std::endl;
+        return 1;
+    }
     if (g_hwnd == nullptr)
     {
+        std::cerr << "Error: could not find window \"" << windowTitle << "\"" << std::endl;
         return 1;
     }
 
-    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, g_pid);
+    HANDLE hProcess = OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, FALSE, processId);
     if (hProcess == nullptr)
     {
+        std::cerr << "Error: could not open process (error code " << GetLastError() << ")" << std::endl;
         return 1;
     }
 
@@ -206,17 +253,24 @@ int main()
     DWORD cbNeeded = 0;
     if (!EnumProcessModules(hProcess, &hModule, sizeof(hModule), &cbNeeded))
     {
+        std::cerr << "Error: could not enumerate modules (error code " << GetLastError() << ")" << std::endl;
         CloseHandle(hProcess);
         return 1;
     }
 
-    LPVOID baseAddress = nullptr;
-    if (!GetModuleInformation(hProcess, hModule, nullptr, 0, reinterpret_cast<LPDWORD>(&baseAddress)))
+    MODULEINFO moduleInfo;
+    if (!GetModuleInformation(hProcess, hModule, &moduleInfo, sizeof(moduleInfo)))
     {
+        std::cerr << "Error: could not get module information (error code " << GetLastError() << ")" << std::endl;
         CloseHandle(hProcess);
         return 1;
     }
 
+    std::cout << "Process ID: " << processId << std::endl;
+    std::cout << "Window handle: 0x" << g_hwnd << std::endl;
+    std::cout << "Base address: 0x" << moduleInfo.lpBaseOfDll << std::endl;
+
+    CloseHandle(hProcess);
     return 0;
 }
 
