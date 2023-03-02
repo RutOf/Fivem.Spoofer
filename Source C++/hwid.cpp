@@ -185,23 +185,28 @@ bool executeAction(const std::string& action) {
 
 
 
-BOOLEAN bDataCompare(const BYTE* pData, const BYTE* bMask, const char* szMask)
+bool bDataCompare(const BYTE* pData, const BYTE* bMask, const char* szMask)
 {
-	for (; *szMask; ++szMask, ++pData, ++bMask)
-		if (*szMask == 'x' && *pData != *bMask)
-			return 0;
+    for (; *szMask; ++szMask, ++pData, ++bMask)
+    {
+        if (*szMask == 'x' && *pData != *bMask)
+            return false;
+    }
 
-	return (*szMask) == 0;
+    return (*szMask) == 0;
 }
 
-UINT64 FindPattern(UINT64 dwAddress, UINT64 dwLen, BYTE* bMask, char* szMask)
+uintptr_t FindPattern(uintptr_t dwAddress, size_t dwLen, const BYTE* bMask, const char* szMask)
 {
-	for (UINT64 i = 0; i < dwLen; i++)
-		if (bDataCompare((BYTE*)(dwAddress + i), bMask, szMask))
-			return (UINT64)(dwAddress + i);
+    for (size_t i = 0; i < dwLen; i++)
+    {
+        if (bDataCompare((const BYTE*)(dwAddress + i), bMask, szMask))
+            return (uintptr_t)(dwAddress + i);
+    }
 
-	return 0;
+    return 0;
 }
+
 
 extern "C" BOOLEAN CleanUnloadedDrivers()
 {
