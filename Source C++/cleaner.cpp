@@ -205,18 +205,28 @@ DWORD getProcessIdByName(const std::wstring& processName)
     return processId;
 }
 
-// Callback function to find a window handle by its title
 BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
 {
-    wchar_t buffer[1024];
-    if (GetWindowText(hwnd, buffer, sizeof(buffer)) > 0)
+    constexpr int kBufferSize = 1024;
+    wchar_t buffer[kBufferSize];
+
+    // Check if the window is visible and has a title
+    if (IsWindowVisible(hwnd) && GetWindowTextLengthW(hwnd) > 0)
     {
-        if (std::wstring(buffer) == reinterpret_cast<const wchar_t*>(lParam))
+        // Get the window title text
+        if (GetWindowTextW(hwnd, buffer, kBufferSize) > 0)
         {
-            g_hwnd = hwnd;
-            return FALSE;  // Stop enumeration
+            // Compare the title text with the string passed in as lParam
+            if (wcscmp(buffer, reinterpret_cast<const wchar_t*>(lParam)) == 0)
+            {
+                // Match found, set the global variable and stop the enumeration
+                g_hwnd = hwnd;
+                return FALSE;
+            }
         }
     }
+
+    // Continue the enumeration
     return TRUE;
 }
 
