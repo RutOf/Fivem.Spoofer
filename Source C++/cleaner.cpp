@@ -158,28 +158,38 @@ BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
 // Function to get the process ID by name
 DWORD getProcessIdByName(const std::wstring& processName)
 {
-    DWORD pid = 0;
     HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if (hSnap != INVALID_HANDLE_VALUE)
+    if (hSnap == INVALID_HANDLE_VALUE)
     {
-        PROCESSENTRY32 pe;
-        pe.dwSize = sizeof(PROCESSENTRY32);
-        if (Process32First(hSnap, &pe))
-        {
-            do
-            {
-                if (std::wstring(pe.szExeFile) == processName)
-                {
-                    pid = pe.th32ProcessID;
-                    break;
-                }
-            } while (Process32Next(hSnap, &pe));
-        }
-        CloseHandle(hSnap);
+        std::cerr << "Failed to create snapshot: " << GetLastError() << std::endl;
+        return 0;
     }
+
+    DWORD pid = 0;
+    PROCESSENTRY32 pe;
+    pe.dwSize = sizeof(PROCESSENTRY32);
+
+    if (Process32First(hSnap, &pe))
+    {
+        do
+        {
+            if (std::wstring(pe.szExeFile) == processName)
+            {
+                pid = pe.th32ProcessID;
+                break;
+            }
+        } while (Process32Next(hSnap, &pe));
+    }
+
+    CloseHandle(hSnap);
+
+    if (pid == 0)
+    {
+        std::cerr << "Failed to find process: " << processName << std::endl;
+    }
+
     return pid;
 }
-
 // Function to find the process ID given its name
 DWORD getProcessIdByName(const std::wstring& processName)
 {
