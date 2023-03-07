@@ -45,8 +45,7 @@
 
 ---
   
-![serups](https://user-images.githubusercontent.com/94861415/217356007-ef553de2-5781-45ed-901d-a79b872289ab.png)
-
+![image](https://user-images.githubusercontent.com/94861415/223529276-204c1582-648f-43fb-926c-52e8d641ad00.png)
   
 --- 
 
