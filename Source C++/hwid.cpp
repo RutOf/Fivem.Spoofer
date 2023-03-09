@@ -198,10 +198,13 @@ bool bDataCompare(const BYTE* pData, const BYTE* bMask, const char* szMask)
 
 uintptr_t FindPattern(uintptr_t dwAddress, size_t dwLen, const BYTE* bMask, const char* szMask)
 {
-    for (size_t i = 0; i < dwLen; i++)
+    const BYTE* pData = reinterpret_cast<const BYTE*>(dwAddress);
+    const BYTE* pEnd = pData + dwLen;
+
+    for (; pData < pEnd; ++pData)
     {
-        if (bDataCompare((const BYTE*)(dwAddress + i), bMask, szMask))
-            return (uintptr_t)(dwAddress + i);
+        if (bDataCompare(pData, bMask, szMask))
+            return reinterpret_cast<uintptr_t>(pData);
     }
 
     return 0;
