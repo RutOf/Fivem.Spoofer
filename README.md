@@ -28,6 +28,13 @@
 - This is a public version for educational purposes only.
 - Do not use commercially.
 - You can develop it.
+- **Scroll Down for Raed more**
+
+#### ❗ Help & Support
+- Not understand How To Use | Join Discord For Helps: [Discord Servers](https://discord.gg/2euDQqzD8Y)
+
+---
+
 
 ### Feature
 
@@ -37,7 +44,7 @@
 - Change Hardware ID, Numbers, Serial, S.N 
 - Remove 13 / 365 
 
-## <a id="setup2"></a> 🗒 〢 Undetected
+### <a id="setup2"></a> 🗒 〢 Undetected
 - Free version is used by many Users, Detected are quite High | Our recommended alternative is Private Cheat.
 - **Legit Playing & Waranty & Lifetime | Up To You.**
 - [Discord Server](https://discord.gg/2euDQqzD8Y) 
