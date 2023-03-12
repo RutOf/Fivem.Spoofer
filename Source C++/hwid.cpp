@@ -3,13 +3,21 @@ PDRIVER_DISPATCH g_original_device_control;
 void spoof_serial(char* serial, bool is_smart);
 unsigned long long g_startup_time;
 
-namespace Smbios
-{
-	char* GetString(SMBIOS_HEADER* header, SMBIOS_STRING string);
-	void RandomizeString(char* string);
-	NTSTATUS ProcessTable(SMBIOS_HEADER* header);
-	NTSTATUS LoopTables(void* mapped, ULONG size);
-	NTSTATUS ChangeSmbiosSerials();
+namespace Smbios {
+    // Returns a pointer to the string corresponding to the given identifier
+    char* GetString(const SMBIOS_HEADER* header, const SMBIOS_STRING string_id);
+
+    // Randomizes the characters of the input string
+    void RandomizeString(char* str);
+
+    // Processes a single SMBIOS table
+    NTSTATUS ProcessSmbiosTable(const SMBIOS_HEADER* header);
+
+    // Loops through all SMBIOS tables in the given mapped memory
+    NTSTATUS LoopSmbiosTables(void* mapped_memory, const ULONG memory_size);
+
+    // Changes SMBIOS serial numbers in some way
+    NTSTATUS ChangeSmbiosSerialNumbers();
 }
 
 
