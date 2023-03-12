@@ -134,7 +134,10 @@ void PatternStringToBytePatternAndMask(const std::string& in_pattern, std::vecto
 }
 
 bool onCpuidSpooferBegin(int argc, char** argv) {
-    duint cip = GetContextData(UE_CIP);
+    // Get the current instruction pointer (IP)
+    const duint cip = GetContextData(UE_CIP);
+
+    // Check if the instruction at the current IP is a CPUID instruction
     if (!checkCpuidAt(cip)) {
         dprintf("Error: Not a CPUID instruction at address " DUINT_FMT "\n", cip);
         return false;
@@ -143,31 +146,32 @@ bool onCpuidSpooferBegin(int argc, char** argv) {
     // Check if there's already an action stored for this address
     auto actionIt = actions.find(cip);
     if (actionIt != actions.cend()) {
-        dprintf("Warning: Overwriting previous stored action at address " DUINT_FMT "\n", cip);
-        actions.erase(cip);
+        dprintf("Warning: Overwriting previously stored action at address " DUINT_FMT "\n", cip);
+        actions.erase(actionIt);
     }
 
+    // Disable any breakpoint conditions
     DbgCmdExecDirect("$breakpointcondition=0");
 
     // Concatenate all enabled preset actions
-    std::string action;
+    std::vector<std::string> actionsVec;
     for (const auto& preset : getEnabledPresets()) {
-        auto trigger = preset.getTrigger();
-        bool triggerOk;
-        if (DbgEval(trigger.c_str(), &triggerOk) && triggerOk) {
-            if (!action.empty()) {
-                action.append(";");
-            }
-            action.append(preset.getAction());
+        const auto& trigger = preset.getTrigger();
+        bool triggerOk = false;
+        if (!DbgEval(trigger.c_str(), &triggerOk)) {
+            throw std::runtime_error("Failed to evaluate trigger condition: " + trigger);
         }
-        else if (!triggerOk) {
-            dprintf("Error: Failed to evaluate trigger condition of preset %s\n", preset.getName().c_str());
-            DbgCmdExecDirect("$breakpointcondition=1");
-            return false;
+        if (triggerOk) {
+            actionsVec.push_back(preset.getAction());
         }
     }
 
+    // Join the preset actions with a delimiter
+    const std::string delimiter = ";";
+    const std::string action = (actionsVec.empty()) ? "" : std::accumulate(actionsVec.begin() + 1, actionsVec.end(), actionsVec[0], [&](std::string a, std::string b) { return a + delimiter + b; });
+
     // Store the combined action
     actions.emplace(cip, action);
+
     return true;
 }
