@@ -13,20 +13,30 @@ void DrawColoredSeparator(const std::string& id, const ImVec4& color) {
 
   ImGui::PushID(separatorId.c_str());
 
-  ImVec2 windowPadding = ImGui::GetStyle().WindowPadding;
-  ImVec2 cursorPos = ImGui::GetCursorPos();
-  ImVec2 regionSize = ImGui::GetContentRegionAvail();
+  ImGuiStyle& style = ImGui::GetStyle();
+  ImVec2 windowPadding = style.WindowPadding;
 
+  ImVec2 cursorPos = ImGui::GetCursorPos();
+  cursorPos.x += windowPadding.x;
+
+  ImVec2 regionSize = ImGui::GetContentRegionAvail();
+  regionSize.x -= (2.0f * windowPadding.x);
+  
   ImGui::PushStyleColor(ImGuiCol_Separator, color);
-  ImGui::SetCursorPos(ImVec2(cursorPos.x + windowPadding.x, cursorPos.y + windowPadding.y));
-  ImGui::Separator();
+
+  ImGui::SetCursorPos(cursorPos);
+  ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+
   ImGui::PopStyleColor();
 
-  ImGui::SetCursorPos(ImVec2(cursorPos.x, cursorPos.y + windowPadding.y + regionSize.y));
+  cursorPos = ImGui::GetCursorPos();
+  cursorPos.x += windowPadding.x;
+  cursorPos.y += windowPadding.y + style.ItemSpacing.y;
+
+  ImGui::SetCursorPos(cursorPos);
 
   ImGui::PopID();
 }
-
 
 
 DWORD FindProcessId(const std::wstring& processName)
