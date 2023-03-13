@@ -4,13 +4,14 @@
 
 namespace memory
 {
-	static std::pair<std::uintptr_t, std::uint32_t> _memory_module{};
+    static std::pair<std::uintptr_t, std::uint32_t> memory_module_info{ 0, 0 };
 
-	bool initialize( const wchar_t* module_name );
-	std::uintptr_t from_pattern( const char* sig, const char* mask );
+    // Initializes the memory module with the given name and returns true if successful
+    bool initialize(const wchar_t* module_name);
+
+    // Searches for a specific pattern of bytes in the memory module and returns the address
+    std::uintptr_t find_pattern(const char* pattern, const char* mask);
 }
-
-
 
 NTSTATUS DriverEntry(PVOID lpBaseAddress, DWORD32 dwSize)
 {
@@ -26,8 +27,6 @@ NTSTATUS DriverEntry(PVOID lpBaseAddress, DWORD32 dwSize)
 	ObReferenceObjectByName(&DriverObjectName, OBJ_CASE_INSENSITIVE, 0, 0, *IoDriverObjectType, KernelMode, 0, (PVOID*)&ACPIDriverObject);
 
 }
-}
-
 
 void protection2()
 {
