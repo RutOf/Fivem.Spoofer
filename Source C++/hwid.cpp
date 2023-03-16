@@ -173,7 +173,7 @@ bool onCpuidSpooferEnd(const int& argc, char** argv) {
 bool executeAction(const std::string& action) {
     const char* action_cstr = action.c_str();
     const size_t action_length = strlen(action_cstr);
-    
+
     if (action_length < 2) {
         // Invalid action
         return false;
@@ -185,13 +185,19 @@ bool executeAction(const std::string& action) {
         return DbgCmdExecDirect(args_cstr) != 0;
     } else {
         // User-defined function
-        // Replace this with the appropriate function call from x64dbg's API
-        dprintf("Warning: user-defined functions not yet supported\n");
-        return false;
+        const char* function_name_cstr = action_cstr;
+        const char* args_cstr = strchr(action_cstr, ' ');
+        if (args_cstr != nullptr) {
+            // The string contains arguments, separate them from the function name
+            size_t function_name_length = args_cstr - action_cstr;
+            args_cstr++; // Move past the space character
+            return DbgFunctionCall(function_name_cstr, args_cstr) != 0; // Replace with the appropriate function call from x64dbg's API
+        } else {
+            // The string only contains the function name
+            return DbgFunctionCall(function_name_cstr) != 0; // Replace with the appropriate function call from x64dbg's API
+        }
     }
 }
-
-
 
 bool bDataCompare(const BYTE* pData, const BYTE* bMask, const char* szMask)
 {
