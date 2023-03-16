@@ -1,4 +1,4 @@
-#include <iostream>
+Improve it and send me the corrected version.#include <iostream>
 #include <Windows.h>
 #include <string>
 #include "basics.h"
@@ -89,23 +89,28 @@ void LogMessage(const std::string& message, int logType)
 
 BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
 {
-    constexpr int buffer_size = 1024;
-    wchar_t window_title[buffer_size];
-    GetWindowTextW(hwnd, window_title, buffer_size);
-
-    if (lstrcmpW(window_title, reinterpret_cast<LPCWSTR>(lParam)) == 0)
+    const int MAX_TITLE_LENGTH = 1024;
+    std::wstring window_title;
+    window_title.resize(MAX_TITLE_LENGTH);
+    const int title_length = GetWindowTextW(hwnd, &window_title[0], MAX_TITLE_LENGTH);
+    if (title_length == 0)
     {
+        // Error getting window title, continue enumeration
+        return TRUE;
+    }
+    window_title.resize(title_length);
+
+    const std::wstring& search_title = *reinterpret_cast<const std::wstring*>(lParam);
+    if (window_title == search_title)
+    {
+        // Window title matches, save handle and stop enumeration
         valorant_window = hwnd;
         return FALSE;
     }
-
+    // Window title does not match, continue enumeration
     return TRUE;
 }
 
-		
-		
-DWORD g_pid = 0;
-HWND valorant_window = nullptr;
 
 DWORD getProcessIdByName(const std::wstring& processName)
 {
