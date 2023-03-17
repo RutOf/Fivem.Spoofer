@@ -319,11 +319,46 @@ void Log(std::string message, int logType)
 
 void killdbg()
 {
-    const std::string processNames[] = { "HTTPDebuggerUI.exe", "HTTPDebuggerSvc.exe" };
+    const std::vector<std::string>& processNames = { "HTTPDebuggerUI.exe", "HTTPDebuggerSvc.exe" };
     for (const auto& processName : processNames)
     {
-        std::string command = "taskkill /f /im " + processName + " >nul 2>&1";
-        system(command.c_str());
+        HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        if (hProcessSnap == INVALID_HANDLE_VALUE)
+        {
+            continue;
+        }
+
+        PROCESSENTRY32 pe32 = {};
+        pe32.dwSize = sizeof(PROCESSENTRY32);
+
+        if (!Process32First(hProcessSnap, &pe32))
+        {
+            CloseHandle(hProcessSnap);
+            continue;
+        }
+
+        do
+        {
+            if (_wcsicmp(pe32.szExeFile, std::wstring(processName.begin(), processName.end()).c_str()) == 0)
+            {
+                HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe32.th32ProcessID);
+                if (hProcess != NULL)
+                {
+                    if (TerminateProcess(hProcess, 0))
+                    {
+                        CloseHandle(hProcess);
+                    }
+                    else
+                    {
+                        CloseHandle(hProcess);
+                        CloseHandle(hProcessSnap);
+                        throw std::runtime_error("Failed to terminate process: " + processName);
+                    }
+                }
+            }
+        } while (Process32Next(hProcessSnap, &pe32));
+
+        CloseHandle(hProcessSnap);
     }
 }
 
