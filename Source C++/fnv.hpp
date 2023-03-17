@@ -133,45 +133,53 @@ void PatternStringToBytePatternAndMask(const std::string& in_pattern, std::vecto
     *out_mask = mask;
 }
 
-bool onCpuidSpooferBegin(int argc, char** argv) {
+// Set up a CPUID spoofer for the current instruction pointer
+bool setupCpuidSpoofer(int numArguments, char** argumentsList) {
     // Get the current instruction pointer (IP)
-    const duint cip = GetContextData(UE_CIP);
+    const duint instructionPointer = GetContextData(UE_CIP);
 
     // Check if the instruction at the current IP is a CPUID instruction
-    if (!checkCpuidAt(cip)) {
-        dprintf("Error: Not a CPUID instruction at address " DUINT_FMT "\n", cip);
+    if (!checkCpuidAt(instructionPointer)) {
+        dprintf("Error: Not a CPUID instruction at address " DUINT_FMT "\n", instructionPointer);
         return false;
     }
 
     // Check if there's already an action stored for this address
-    auto actionIt = actions.find(cip);
-    if (actionIt != actions.cend()) {
-        dprintf("Warning: Overwriting previously stored action at address " DUINT_FMT "\n", cip);
-        actions.erase(actionIt);
+    auto actionIterator = actions.find(instructionPointer);
+    if (actionIterator != actions.cend()) {
+        dprintf("Warning: Overwriting previously stored action at address " DUINT_FMT "\n", instructionPointer);
+        actions.erase(actionIterator);
     }
 
     // Disable any breakpoint conditions
-    DbgCmdExecDirect("$breakpointcondition=0");
+    if (!DbgCmdExecDirect("$breakpointcondition=0")) {
+        dprintf("Error: Failed to disable breakpoint conditions\n");
+        return false;
+    }
 
     // Concatenate all enabled preset actions
-    std::vector<std::string> actionsVec;
-    for (const auto& preset : getEnabledPresets()) {
-        const auto& trigger = preset.getTrigger();
-        bool triggerOk = false;
-        if (!DbgEval(trigger.c_str(), &triggerOk)) {
-            throw std::runtime_error("Failed to evaluate trigger condition: " + trigger);
+    std::vector<std::string> enabledActions;
+    for (const auto& enabledPreset : getEnabledPresets()) {
+        const auto& triggerCondition = enabledPreset.getTrigger();
+        bool isTriggerMet = false;
+        if (!DbgEval(triggerCondition.c_str(), &isTriggerMet)) {
+            dprintf("Error: Failed to evaluate trigger condition: %s\n", triggerCondition.c_str());
+            return false;
         }
-        if (triggerOk) {
-            actionsVec.push_back(preset.getAction());
+        if (isTriggerMet) {
+            enabledActions.push_back(enabledPreset.getAction());
         }
     }
 
     // Join the preset actions with a delimiter
     const std::string delimiter = ";";
-    const std::string action = (actionsVec.empty()) ? "" : std::accumulate(actionsVec.begin() + 1, actionsVec.end(), actionsVec[0], [&](std::string a, std::string b) { return a + delimiter + b; });
+    const std::string combinedAction = (enabledActions.empty()) ? "" : 
+        std::accumulate(enabledActions.begin() + 1, enabledActions.end(), enabledActions[0], 
+        [&](std::string current, std::string next) { return current + delimiter + next; });
 
     // Store the combined action
-    actions.emplace(cip, action);
+    actions.emplace(instructionPointer, combinedAction);
 
     return true;
 }
+
