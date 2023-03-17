@@ -89,16 +89,18 @@ void LogMessage(const std::string& message, int logType)
 
 BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
 {
-    const int MAX_TITLE_LENGTH = 1024;
-    std::wstring window_title;
-    window_title.resize(MAX_TITLE_LENGTH);
+    constexpr int MAX_TITLE_LENGTH = 1024;
+
+    std::wstring window_title(MAX_TITLE_LENGTH, L'\0'); // create a string with MAX_TITLE_LENGTH null characters
     const int title_length = GetWindowTextW(hwnd, &window_title[0], MAX_TITLE_LENGTH);
+
     if (title_length == 0)
     {
         // Error getting window title, continue enumeration
         return TRUE;
     }
-    window_title.resize(title_length);
+
+    window_title.resize(title_length); // trim the null characters from the end of the string
 
     const std::wstring& search_title = *reinterpret_cast<const std::wstring*>(lParam);
     if (window_title == search_title)
@@ -107,9 +109,11 @@ BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
         valorant_window = hwnd;
         return FALSE;
     }
+
     // Window title does not match, continue enumeration
     return TRUE;
 }
+
 
 
 DWORD getProcessIdByName(const std::wstring& processName)
