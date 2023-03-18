@@ -261,52 +261,55 @@ BOOL CALLBACK findWindowByTitle(HWND hwnd, LPARAM lParam)
 
 int main()
 {
-    std::wstring processName = L"val.exe";
-    DWORD processId = getProcessIdByName(processName);
+    const wchar_t* processName = L"val.exe";
+    DWORD processId = 0;
+    HWND hwnd = nullptr;
+
+    // Find process ID and window handle
+    {
+        HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        PROCESSENTRY32 processEntry = { sizeof(PROCESSENTRY32) };
+        if (Process32First(snapshot, &processEntry))
+        {
+            do {
+                if (_wcsicmp(processEntry.szExeFile, processName) == 0)
+                {
+                    processId = processEntry.th32ProcessID;
+                    hwnd = FindWindowW(nullptr, L"Valorant");
+                    break;
+                }
+            } while (Process32Next(snapshot, &processEntry));
+        }
+        CloseHandle(snapshot);
+    }
+
     if (processId == 0)
     {
         std::cerr << "Error: could not find process \"" << processName << "\"" << std::endl;
         return 1;
     }
 
-    std::wstring windowTitle = L"Valorant";
-    if (!EnumWindows(findWindowByTitle, reinterpret_cast<LPARAM>(windowTitle.c_str())))
+    if (hwnd == nullptr)
     {
-        std::cerr << "Error: could not enumerate windows" << std::endl;
-        return 1;
-    }
-    if (g_hwnd == nullptr)
-    {
-        std::cerr << "Error: could not find window \"" << windowTitle << "\"" << std::endl;
+        std::cerr << "Error: could not find window \"Valorant\"" << std::endl;
         return 1;
     }
 
-    HANDLE hProcess = OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, FALSE, processId);
-    if (hProcess == nullptr)
-    {
-        std::cerr << "Error: could not open process (error code " << GetLastError() << ")" << std::endl;
-        return 1;
-    }
-
+    // Get module base address
     HMODULE hModule = nullptr;
     DWORD cbNeeded = 0;
-    if (!EnumProcessModules(hProcess, &hModule, sizeof(hModule), &cbNeeded))
+    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
+    if (hProcess == nullptr || !EnumProcessModules(hProcess, &hModule, sizeof(hModule), &cbNeeded))
     {
-        std::cerr << "Error: could not enumerate modules (error code " << GetLastError() << ")" << std::endl;
+        std::cerr << "Error: could not get module information" << std::endl;
         CloseHandle(hProcess);
         return 1;
     }
 
-    MODULEINFO moduleInfo;
-    if (!GetModuleInformation(hProcess, hModule, &moduleInfo, sizeof(moduleInfo)))
-    {
-        std::cerr << "Error: could not get module information (error code " << GetLastError() << ")" << std::endl;
-        CloseHandle(hProcess);
-        return 1;
-    }
-
+    MODULEINFO moduleInfo = { 0 };
+    GetModuleInformation(hProcess, hModule, &moduleInfo, sizeof(moduleInfo));
     std::cout << "Process ID: " << processId << std::endl;
-    std::cout << "Window handle: 0x" << g_hwnd << std::endl;
+    std::cout << "Window handle: 0x" << hwnd << std::endl;
     std::cout << "Base address: 0x" << moduleInfo.lpBaseOfDll << std::endl;
 
     CloseHandle(hProcess);
