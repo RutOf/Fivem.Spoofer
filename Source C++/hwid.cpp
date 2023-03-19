@@ -104,43 +104,22 @@ std::string random_string(const int len)
 
 void remove_scrollbar()
 {
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_SCREEN_BUFFER_INFO info;
-	GetConsoleScreenBufferInfo(handle, &info);
-	COORD new_size =
-	{
-		info.srWindow.Right - info.srWindow.Left + 1,
-		info.srWindow.Bottom - info.srWindow.Top + 1
-	};
-	spoof_serial(handle, false);
+    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    GetConsoleScreenBufferInfo(handle, &info);
+    COORD new_size = {info.srWindow.Right - info.srWindow.Left + 1, info.srWindow.Bottom - info.srWindow.Top + 1};
+    spoof_serial(handle, false);
 }
-
-	auto status = STATUS_NOT_FOUND;
-	
-	while (deviceArray->NextDevice)
+auto status = STATUS_NOT_FOUND;
+while (deviceArray->NextDevice)
+{
+    const auto length = extension->_Identity.Identity.SerialNumber.Length;
+    if (!length) { DisableSmartBit(extension); registerInterfaces(extension); }
+    ExFreePool(buffer);
+    deviceArray = deviceArray->NextDevice;
 	{
-		if 
-			
-			const auto length = extension->_Identity.Identity.SerialNumber.Length;
-			if (!length)
-
-			char original[256];
-			
-			ExFreePool(buffer);
-
-			/*
-			 * On some devices DiskEnableDisableFailurePrediction will fail
-			 * Setting the bits directly will not fail and should work on any device
-			 */
-			DisableSmartBit(extension);
-
-			registerInterfaces(extension);
-		}
-
-		deviceArray = deviceArray->NextDevice;
+		return status;
 	}
-
-	return status;
 }
 
 
