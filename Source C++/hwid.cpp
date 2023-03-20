@@ -180,7 +180,7 @@ bool executeAction(const std::string& action) {
 
 bool bDataCompare(const BYTE* pData, const BYTE* bMask, const char* szMask)
 {
-    for (; *szMask; ++szMask, ++pData, ++bMask)
+    for (; *szMask != 0; ++szMask, ++pData, ++bMask)
     {
         if (*szMask == 'x' && *pData != *bMask)
             return false;
