@@ -33,44 +33,48 @@ LPDIRECT3DDEVICE9        g_pd3dDevice;
 D3DPRESENT_PARAMETERS    g_d3dpp;
 LPDIRECT3D9              g_pD3D;
 
+// Load a texture from a file using the DirectX API
 bool LoadTextureFromFile(const char* filename, IDirect3DTexture9** out_texture, int* out_width, int* out_height)
 {
     if (!filename || !out_texture || !out_width || !out_height)
     {
-        return false;
+        return false; // check if the input parameters are valid
     }
 
+    HRESULT hr;
+
+    // create a texture object from the file
     IDirect3DTexture9* texture = nullptr;
-    HRESULT hr = D3DXCreateTextureFromFileA(g_pd3dDevice, filename, &texture);
+    hr = D3DXCreateTextureFromFileA(g_pd3dDevice, filename, &texture);
     if (FAILED(hr))
     {
-        return false;
+        return false; // return false if creating texture from file failed
     }
 
     D3DSURFACE_DESC desc;
+    // get the texture description to determine its dimensions
     hr = texture->GetLevelDesc(0, &desc);
     if (FAILED(hr))
     {
         texture->Release();
-        return false;
+        return false; // return false if getting texture description failed
     }
 
+    // output the texture object and dimensions
     *out_texture = texture;
     *out_width = static_cast<int>(desc.Width);
     *out_height = static_cast<int>(desc.Height);
     return true;
 }
 
-
+// Check if a file exists at the given path
 inline bool FileExists(const std::string& name) {
     struct stat buffer;
-    return (stat(name.c_str(), &buffer) == 0);
+    return (stat(name.c_str(), &buffer) == 0 && S_ISREG(buffer.st_mode));
+    // use stat to get information about the file
+    // return true if file exists and is a regular file, false otherwise
 }
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-
-// Set the colors and rounding values for the ImGui GUI
 void SetImGuiStyle() {
 
     // Get the ImGui style settings
