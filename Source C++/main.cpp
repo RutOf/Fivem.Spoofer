@@ -415,20 +415,17 @@ bool utils::Memory(const std::string& desired_file_path, const char* address, si
 }
 
 
-bool Spoofing
-{
+class Spoofing {
 public:
-    // Constructor
     Spoofing(const std::string& hosts_path) : hosts_path_(hosts_path) {}
 
     // Remove the specified domains from the hosts file
-    bool RemoveXboxAuth(const std::string& domains[], size_t num_domains)
+    bool RemoveXboxAuth(const std::vector<std::string>& domains)
     {
         std::cout << "Blocking Xbox-related domains...\n";
 
         // Open the hosts file in append mode
-        std::ofstream outfile;
-        outfile.open(hosts_path_, std::ios_base::app);
+        std::ofstream outfile(hosts_path_, std::ios_base::app);
         if (!outfile.is_open())
         {
             std::cerr << "Error: Could not open " << hosts_path_ << '\n';
@@ -436,18 +433,18 @@ public:
         }
 
         // Iterate over the list of domains and add an entry for each one
-        for (size_t i = 0; i < num_domains; ++i)
+        for (const auto& domain : domains)
         {
             // Check if the domain is already present in the hosts file
-            if (!CheckWord((char*)hosts_path_.c_str(), (char*)domains[i].c_str()))
+            if (!IsDomainBlocked(domain))
             {
                 // If not, add an entry redirecting traffic to the localhost address
-                outfile << "127.0.0.1 " << domains[i] << '\n';
-                std::cout << "Blocked " << domains[i] << '\n';
+                outfile << "127.0.0.1 " << domain << '\n';
+                std::cout << "Blocked " << domain << '\n';
             }
             else
             {
-                std::cout << domains[i] << " is already blocked, skipping\n";
+                std::cout << domain << " is already blocked, skipping\n";
             }
         }
 
@@ -458,10 +455,41 @@ public:
     }
 
 private:
-    // Check if a word is present in a file
-    bool CheckWord(char* file, char* word)
+    // Check if a domain is already blocked in the hosts file
+    bool IsDomainBlocked(const std::string& domain)
     {
-        // TODO: Implement this function
+        // Open the hosts file
+        std::ifstream infile(hosts_path_);
+        if (!infile.is_open())
+        {
+            std::cerr << "Error: Could not open " << hosts_path_ << '\n';
+            return false;
+        }
+
+        // Check each line in the hosts file for the specified domain
+        std::string line;
+        while (std::getline(infile, line))
+        {
+            // Skip comments and blank lines
+            if (line.empty() || line[0] == '#')
+            {
+                continue;
+            }
+
+            // Check if the line contains the specified domain
+            size_t pos = line.find(domain);
+            if (pos != std::string::npos)
+            {
+                // If the line contains the domain, check if it is blocked
+                pos = line.find("127.0.0.1");
+                if (pos != std::string::npos)
+                {
+                    return true;
+                }
+            }
+        }
+
+        // If the domain is not found in the hosts file, it is not blocked
         return false;
     }
 
